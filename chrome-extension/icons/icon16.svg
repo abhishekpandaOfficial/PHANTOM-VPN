@@ -1,10 +1,31 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 100 100">
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 512 512" role="img" aria-label="PHANTOMVPN icon">
   <defs>
-    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#00e5ff"/>
-      <stop offset="100%" style="stop-color:#b47fff"/>
+    <linearGradient id="bg" x1="64" y1="56" x2="448" y2="456" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#06d6a0"/>
+      <stop offset="0.55" stop-color="#00b4d8"/>
+      <stop offset="1" stop-color="#023047"/>
+    </linearGradient>
+    <linearGradient id="shieldFill" x1="134" y1="110" x2="378" y2="430" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#e8fbff" stop-opacity="0.95"/>
+      <stop offset="1" stop-color="#b9eff7" stop-opacity="0.88"/>
+    </linearGradient>
+    <linearGradient id="core" x1="195" y1="214" x2="318" y2="360" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0a2a36"/>
+      <stop offset="1" stop-color="#0b1c24"/>
     </linearGradient>
   </defs>
-  <polygon points="50,5 95,25 95,60 50,95 5,60 5,25" fill="url(#g)" opacity="0.9"/>
-  <text x="50" y="63" text-anchor="middle" font-size="40" fill="white">🔒</text>
+  <rect x="32" y="32" width="448" height="448" rx="118" fill="url(#bg)"/>
+  <g fill="none" stroke="#b8fff0" stroke-linecap="round" opacity="0.7">
+    <path d="M129 167c39-39 83-56 127-56s88 17 127 56" stroke-width="16"/>
+    <path d="M160 197c30-29 62-42 96-42s66 13 96 42" stroke-width="12"/>
+  </g>
+  <path d="M256 100l129 48v93c0 92-53 148-129 187-76-39-129-95-129-187v-93l129-48z" fill="url(#shieldFill)" stroke="#d8fcff" stroke-width="12"/>
+  <path d="M256 165c-48 0-87 39-87 87v5h40v-5c0-26 21-47 47-47s47 21 47 47v5h40v-5c0-48-39-87-87-87z" fill="#e5feff"/>
+  <rect x="163" y="248" width="186" height="146" rx="40" fill="url(#core)"/>
+  <circle cx="256" cy="304" r="25" fill="#06d6a0"/>
+  <path d="M256 323l-20 44h40z" fill="#06d6a0"/>
+  <g fill="none" stroke="#8deeff" stroke-width="10" stroke-linecap="round" opacity="0.8">
+    <path d="M212 365h88"/>
+    <path d="M227 334h58"/>
+  </g>
 </svg>
