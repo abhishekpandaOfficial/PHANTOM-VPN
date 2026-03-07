@@ -1,7 +1,115 @@
 {
   "cleanUrls": true,
   "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/landing",
+      "destination": "/vpn",
+      "permanent": true
+    },
+    {
+      "source": "/portal",
+      "destination": "/profile",
+      "permanent": true
+    },
+    {
+      "source": "/monitor",
+      "destination": "/dashboard",
+      "permanent": true
+    },
+    {
+      "source": "/3-dashboard",
+      "destination": "/dashboard",
+      "permanent": true
+    },
+    {
+      "source": "/3-dashboard.html",
+      "destination": "/dashboard",
+      "permanent": true
+    },
+    {
+      "source": "/5-landing",
+      "destination": "/vpn",
+      "permanent": true
+    },
+    {
+      "source": "/5-landing.html",
+      "destination": "/vpn",
+      "permanent": true
+    },
+    {
+      "source": "/6-admin",
+      "destination": "/admin",
+      "permanent": true
+    },
+    {
+      "source": "/6-admin.html",
+      "destination": "/admin",
+      "permanent": true
+    },
+    {
+      "source": "/7-user-dashboard",
+      "destination": "/profile",
+      "permanent": true
+    },
+    {
+      "source": "/7-user-dashboard.html",
+      "destination": "/profile",
+      "permanent": true
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/5-landing"
+    },
+    {
+      "source": "/vpn",
+      "destination": "/5-landing"
+    },
+    {
+      "source": "/admin",
+      "destination": "/6-admin"
+    },
+    {
+      "source": "/dashboard",
+      "destination": "/3-dashboard"
+    },
+    {
+      "source": "/profile",
+      "destination": "/7-user-dashboard"
+    },
+    {
+      "source": "/routing",
+      "destination": "/8-routing"
+    },
+    {
+      "source": "/docs",
+      "destination": "/9-docs"
+    },
+    {
+      "source": "/health",
+      "destination": "http://146.190.88.143:7777/health"
+    },
+    {
+      "source": "/stream",
+      "destination": "http://146.190.88.143:7777/stream"
+    },
+    {
+      "source": "/api/:match*",
+      "destination": "http://146.190.88.143:7777/api/:match*"
+    }
+  ],
   "headers": [
+    {
+      "source": "/dashboard",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
     {
       "source": "/3-dashboard.html",
       "headers": [

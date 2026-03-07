@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PHANTOM VPN Admin</title>
+<meta name="description" content="PHANTOM VPN admin access for TOTP login, user provisioning, payment approval, and security setup.">
+<link rel="canonical" href="https://phantom.origixcloud.com/admin">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#081218;
+  --panel:#10202d;
+  --panel2:#16303f;
+  --line:#25495c;
+  --text:#dceef6;
+  --muted:#82a7b8;
+  --green:#42d9a3;
+  --orange:#ff9a62;
+  --red:#ff6887;
+  --cyan:#52d8ff;
+  --gold:#ffd86c;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  min-height:100vh;
+  background:
+    radial-gradient(circle at top left, rgba(82,216,255,.14), transparent 34%),
+    radial-gradient(circle at top right, rgba(255,104,135,.12), transparent 30%),
+    linear-gradient(180deg, #071116 0%, #09161d 100%);
+  color:var(--text);
+  font-family:'JetBrains Mono',monospace;
+  padding:24px;
+}
+.wrap{max-width:1200px;margin:0 auto}
+header{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;flex-wrap:wrap;margin-bottom:18px}
+h1{font-family:'Outfit',sans-serif;font-size:38px;letter-spacing:.4px}
+.sub{color:var(--muted);font-size:13px;line-height:1.7;max-width:70ch}
+.link{color:var(--cyan);text-decoration:none;font-size:12px}
+.grid{display:grid;grid-template-columns:340px 1fr;gap:14px}
+.main-grid{display:grid;grid-template-columns:1fr;gap:14px}
+.panel{
+  background:linear-gradient(160deg,var(--panel),var(--panel2));
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:16px;
+  box-shadow:0 18px 34px rgba(0,0,0,.18);
+}
+.panel h2{font-family:'Outfit',sans-serif;font-size:21px;margin-bottom:12px}
+label{display:block;font-size:11px;color:var(--muted);margin:10px 0 6px}
+input, textarea, select{
+  width:100%;
+  background:#06131a;
+  color:var(--text);
+  border:1px solid #224557;
+  border-radius:12px;
+  padding:10px 12px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;
+  outline:none;
+}
+textarea{min-height:78px;resize:vertical}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+button{
+  border:1px solid #31586b;
+  background:#0b1820;
+  color:var(--text);
+  padding:10px 12px;
+  border-radius:12px;
+  cursor:pointer;
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;
+  transition:.18s ease;
+}
+button:hover{transform:translateY(-1px)}
+button.main{background:#083328;border-color:#3dc8a1;color:#9ff3d2}
+button.warn{background:#2a131b;border-color:#70414e;color:#ffadc1}
+button.alt{background:#0c1d28;border-color:#2f6a82;color:#8ddffb}
+button.slim{padding:7px 9px;font-size:11px;border-radius:10px}
+.status{min-height:18px;margin-top:12px;font-size:12px}
+.status.ok{color:var(--green)}
+.status.err{color:var(--red)}
+.helper{font-size:11px;color:var(--muted);line-height:1.6}
+.hidden{display:none!important}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.info-card{
+  background:rgba(5,14,20,.42);
+  border:1px solid rgba(37,73,92,.8);
+  border-radius:14px;
+  padding:13px;
+}
+.info-card strong{
+  display:block;
+  font-family:'Outfit',sans-serif;
+  font-size:20px;
+  margin-top:6px;
+}
+.info-card span{font-size:11px;color:var(--muted)}
+.info-card code{font-size:11px;color:var(--cyan);word-break:break-all}
+.layout{display:grid;grid-template-columns:1.1fr .9fr;gap:14px}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:14px}
+table{width:100%;border-collapse:collapse;min-width:980px;font-size:12px}
+th,td{padding:10px;border-bottom:1px solid #1f3b49;text-align:left;vertical-align:top}
+th{font-size:11px;color:var(--muted);font-weight:600}
+.badge{
+  display:inline-flex;
+  align-items:center;
+  border-radius:999px;
+  padding:3px 7px;
+  font-size:10px;
+  font-weight:700;
+  border:1px solid transparent;
+}
+.badge.active{background:#173d33;color:#83efca;border-color:#295f53}
+.badge.suspended{background:#3c3013;color:#ffe08f;border-color:#705d22}
+.badge.revoked{background:#401823;color:#ffadbc;border-color:#723040}
+.badge.paid{background:#15313d;color:#8adfff;border-color:#2a657a}
+.badge.pending{background:#302516;color:#ffc388;border-color:#6d4d26}
+.badge.trial{background:#1d2535;color:#b4c8ff;border-color:#374d7a}
+.actions{display:flex;gap:6px;flex-wrap:wrap}
+pre{
+  margin-top:10px;
+  background:#041018;
+  border:1px solid #21495c;
+  border-radius:14px;
+  padding:12px;
+  overflow:auto;
+  max-height:300px;
+  font-size:11px;
+  line-height:1.6;
+  white-space:pre-wrap;
+  word-break:break-word;
+}
+#qrcode{
+  width:180px;
+  min-height:180px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#fff;
+  border-radius:14px;
+  padding:10px;
+}
+.security-grid{display:grid;grid-template-columns:200px 1fr;gap:14px;align-items:start}
+@media (max-width:1100px){
+  .grid,.layout,.security-grid{grid-template-columns:1fr}
+  .cards{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>PHANTOM Admin</h1>
+      <p class="sub">Admin access uses your authenticator code as the rotating sign-in password. End users do not use TOTP here: they start on the PHANTOM VPN page, create a profile, import the WireGuard QR, and manage payment from their profile page.</p>
+    </div>
+    <a class="link" href="/dashboard" target="_blank" rel="noreferrer">Open Monitoring Dashboard</a>
+  </header>
+
+  <div class="grid">
+    <section class="panel" id="loginPanel">
+      <h2>Admin Sign-In</h2>
+      <label for="api">API URL</label>
+      <input id="api" placeholder="https://vpn.example.com" />
+      <label for="user">Admin Username</label>
+      <input id="user" value="hello@abhishekpanda.com" />
+      <label for="pass">Rotating Password</label>
+      <input id="pass" type="password" inputmode="numeric" placeholder="Current authenticator code" />
+      <div class="row" style="margin-top:12px">
+        <button class="alt" id="healthBtn">Test API</button>
+        <button class="main" id="loginBtn">Sign In</button>
+      </div>
+      <div id="loginStatus" class="status"></div>
+      <p class="helper">Password = the current six-digit code from the QR setup shown during deployment, or from the authenticator app you paired later. If you are an end user, go to <a class="link" href="/vpn">/vpn</a> instead.</p>
+    </section>
+
+    <section class="main-grid hidden" id="appPanel">
+      <section class="panel">
+        <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap">
+          <div>
+            <h2>Security Setup</h2>
+            <p class="helper">Use this QR if you need to re-scan the admin authenticator. The server issues a long-lived admin session after sign-in, so the rotating code is only needed at login.</p>
+          </div>
+          <button class="warn" id="logoutBtn">Logout</button>
+        </div>
+        <div class="security-grid" style="margin-top:12px">
+          <div id="qrcode"><span class="helper">QR will load here</span></div>
+          <div class="cards" style="grid-template-columns:1fr 1fr">
+            <div class="info-card">
+              <span>Admin User</span>
+              <strong id="securityUser">-</strong>
+            </div>
+            <div class="info-card">
+              <span>Trial Window</span>
+              <strong id="securityTrial">-</strong>
+            </div>
+            <div class="info-card">
+              <span>Payment Link</span>
+              <code id="securityPay">-</code>
+            </div>
+            <div class="info-card">
+              <span>Authenticator Secret</span>
+              <code id="securitySecret">-</code>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="layout">
+        <section class="panel">
+          <h2>Create Direct User</h2>
+          <label for="name">Client Name</label>
+          <input id="name" placeholder="alice-premium" />
+          <div class="row">
+            <div>
+              <label for="email">User Email</label>
+              <input id="email" placeholder="alice@example.com" />
+            </div>
+            <div>
+              <label for="accessType">Access Type</label>
+              <select id="accessType">
+                <option value="paid">Paid / always active</option>
+                <option value="trial">Trial (1 hour)</option>
+              </select>
+            </div>
+          </div>
+          <label for="note">Internal Note</label>
+          <textarea id="note" placeholder="device, team, billing note"></textarea>
+          <div class="row" style="margin-top:12px">
+            <button class="alt" id="refreshBtn">Refresh Users</button>
+            <button class="main" id="createBtn">Create Profile</button>
+          </div>
+          <div id="status" class="status"></div>
+          <pre id="configOut" class="hidden"></pre>
+          <button id="downloadBtn" class="main hidden" style="margin-top:10px">Download .conf</button>
+        </section>
+
+        <section class="panel">
+          <h2>Trial Rules</h2>
+          <div class="cards" style="grid-template-columns:1fr">
+            <div class="info-card">
+              <span>Public Access</span>
+              <strong>1 hour free</strong>
+            </div>
+            <div class="info-card">
+              <span>After Trial</span>
+              <strong>Payment required</strong>
+            </div>
+            <div class="info-card">
+              <span>Admin Exemption</span>
+              <strong>You are exempt</strong>
+            </div>
+          </div>
+          <p class="helper" style="margin-top:12px">Public users receive one free hour of connected usage inside a 15-day cycle. Disconnecting and reconnecting does not reset the quota. Approval adds the same peer back, so the existing config keeps working.</p>
+        </section>
+      </div>
+
+      <section class="panel">
+        <h2>Users</h2>
+        <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:10px">
+          <span id="count" class="helper">0 users</span>
+          <span class="helper">Approve payment to reactivate expired trials.</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Access</th>
+                <th>Payment</th>
+                <th>Quota / Reset</th>
+                <th>Status</th>
+                <th>Notes</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="tbody">
+              <tr><td colspan="7" style="color:var(--muted)">No records yet</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </section>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
+<script>
+const $ = (id) => document.getElementById(id);
+let authToken = localStorage.getItem('phantom_admin_token') || '';
+let authExpiry = localStorage.getItem('phantom_admin_expiry') || '';
+let lastConfig = '';
+let lastFilename = '';
+let qrCode = null;
+
+function apiBase() {
+  const raw = ($('api').value || '').trim().replace(/\/$/, '');
+  return raw || window.location.origin;
+}
+
+function setStatus(target, msg, isErr) {
+  target.textContent = msg;
+  target.className = 'status ' + (isErr ? 'err' : 'ok');
+}
+
+function authHeaders(extra = {}) {
+  return {
+    ...extra,
+    'Authorization': 'Bearer ' + authToken,
+    'Content-Type': 'application/json',
+  };
+}
+
+async function api(path, opts = {}) {
+  const res = await fetch(apiBase() + path, {
+    method: opts.method || 'GET',
+    headers: opts.public ? (opts.headers || {}) : authHeaders(opts.headers || {}),
+    body: opts.body ? JSON.stringify(opts.body) : undefined,
+  });
+  let data = {};
+  try { data = await res.json(); } catch (e) {}
+  if (!res.ok) throw new Error(data.error || ('HTTP ' + res.status));
+  return data;
+}
+
+function safeFileName(v) {
+  return String(v || 'phantom-user').toLowerCase().replace(/[^a-z0-9_-]/g, '-');
+}
+
+function downloadConfig() {
+  const blob = new Blob([lastConfig], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = lastFilename || 'phantom-user.conf';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+async function testApi() {
+  try {
+    const d = await api('/health', { public: true });
+    setStatus($('loginStatus'), 'API healthy: ' + (d.status || 'ok'), false);
+    if (d.adminUser) $('user').value = d.adminUser;
+  } catch (e) {
+    const msg = String(e.message || '');
+    if (msg.includes('Invalid username or authenticator code')) {
+      setStatus($('loginStatus'), 'Use the admin email and the current six-digit authenticator code. End users should start on /vpn, not here.', true);
+      return;
+    }
+    setStatus($('loginStatus'), msg, true);
+  }
+}
+
+async function login() {
+  try {
+    const base = apiBase();
+    const d = await api('/api/auth/login', {
+      method: 'POST',
+      public: true,
+      body: {
+        username: $('user').value.trim(),
+        password: $('pass').value.trim(),
+      },
+    });
+    authToken = d.token;
+    authExpiry = d.expiresAt || '';
+    localStorage.setItem('phantom_admin_token', authToken);
+    localStorage.setItem('phantom_admin_expiry', authExpiry);
+    localStorage.setItem('phantom_admin_user', $('user').value.trim());
+    localStorage.setItem('phantom_server', base);
+    localStorage.setItem('phantom_user', $('user').value.trim());
+    setStatus($('loginStatus'), 'Signed in until ' + authExpiry.replace('T', ' ').replace('Z', ''), false);
+    $('pass').value = '';
+    await openApp();
+  } catch (e) {
+    setStatus($('loginStatus'), e.message, true);
+  }
+}
+
+function logout() {
+  authToken = '';
+  authExpiry = '';
+  localStorage.removeItem('phantom_admin_token');
+  localStorage.removeItem('phantom_admin_expiry');
+  $('loginPanel').classList.remove('hidden');
+  $('appPanel').classList.add('hidden');
+  setStatus($('loginStatus'), 'Logged out', false);
+}
+
+function paymentBadge(status) {
+  if (status === 'paid') return '<span class="badge paid">paid</span>';
+  if (status === 'pending_review' || status === 'pending_gateway') return '<span class="badge pending">pending</span>';
+  return '<span class="badge trial">trial</span>';
+}
+
+function statusBadge(status) {
+  if (status === 'active') return '<span class="badge active">active</span>';
+  if (status === 'suspended') return '<span class="badge suspended">suspended</span>';
+  return '<span class="badge revoked">revoked</span>';
+}
+
+async function loadSecurity() {
+  const d = await api('/api/admin/security');
+  $('securityUser').textContent = d.adminUser || '-';
+  $('securityTrial').textContent = (d.freeTrialHours || 1) + ' hour free';
+  $('securityPay').textContent = d.paymentLink || '-';
+  $('securitySecret').textContent = d.totpSecretMasked || 'Authenticator disabled';
+  const box = $('qrcode');
+  box.innerHTML = '';
+  if (d.totpSetupUri && window.QRCode) {
+    qrCode = new QRCode(box, {
+      text: d.totpSetupUri,
+      width: 160,
+      height: 160,
+    });
+  } else if (d.totpSetupUri) {
+    box.innerHTML = '<span class="helper">QR library still loading...</span>';
+    if (!loadSecurity._retried) {
+      loadSecurity._retried = true;
+      setTimeout(loadSecurity, 400);
+    }
+  } else {
+    box.innerHTML = '<span class="helper">QR unavailable</span>';
+  }
+}
+
+function escapeHtml(value) {
+  return String(value || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function userRow(u) {
+  const remaining = u.remainingTrialSeconds === null ? 'Paid access' : (Math.max(0, Number(u.remainingTrialSeconds || 0)) / 60).toFixed(0) + ' min left';
+  const nextCycle = u.nextTrialEligibleAt ? u.nextTrialEligibleAt.replace('T', ' ').replace('Z', '') : 'No reset needed';
+  const accessLabel = u.paymentStatus === 'paid'
+    ? 'Paid access'
+    : (u.currentConnected ? 'Trial connected' : (u.quotaExhausted || u.trialWindowExpired ? 'Trial paused' : 'Trial available'));
+  const paymentMeta = [
+    paymentBadge(u.paymentStatus),
+    u.paymentReference ? `<div style="margin-top:6px;color:var(--muted);font-size:10px">Ref: ${escapeHtml(u.paymentReference)}</div>` : '',
+  ].join('');
+  const notes = [
+    escapeHtml(u.email || 'No email'),
+    u.note ? `<div style="margin-top:6px;color:var(--muted);font-size:10px">${escapeHtml(u.note)}</div>` : '',
+    u.suspendedReason ? `<div style="margin-top:6px;color:var(--orange);font-size:10px">${escapeHtml(u.suspendedReason)}</div>` : '',
+  ].join('');
+  const actions = [];
+  if (u.status !== 'revoked' && u.paymentStatus !== 'paid') {
+    actions.push(`<button class="slim alt" onclick="approvePayment('${u.id}')">Approve</button>`);
+  }
+  if (u.status !== 'revoked') {
+    actions.push(`<button class="slim warn" onclick="revokeUser('${u.id}')">Revoke</button>`);
+  }
+  return `<tr>
+    <td>
+      <div>${escapeHtml(u.name)}</div>
+      <div style="margin-top:6px;color:var(--muted);font-size:10px">${escapeHtml(u.id)}</div>
+    </td>
+    <td>${escapeHtml(accessLabel)}<div style="margin-top:6px;color:var(--muted);font-size:10px">via ${escapeHtml(u.createdVia || 'admin')}</div></td>
+    <td>${paymentMeta}</td>
+    <td>${escapeHtml(remaining)}<div style="margin-top:6px;color:var(--muted);font-size:10px">next cycle: ${escapeHtml(nextCycle)}</div></td>
+    <td>${statusBadge(u.status)}</td>
+    <td>${notes}</td>
+    <td><div class="actions">${actions.join('') || '<span style="color:var(--muted)">-</span>'}</div></td>
+  </tr>`;
+}
+
+async function refreshUsers() {
+  try {
+    const d = await api('/api/admin/users');
+    const users = d.users || [];
+    $('count').textContent = users.length + ' users';
+    $('tbody').innerHTML = users.length
+      ? users.map(userRow).join('')
+      : '<tr><td colspan="7" style="color:var(--muted)">No records yet</td></tr>';
+  } catch (e) {
+    setStatus($('status'), e.message, true);
+  }
+}
+
+async function createUser() {
+  try {
+    const body = {
+      name: $('name').value.trim(),
+      email: $('email').value.trim(),
+      note: $('note').value.trim(),
+      accessType: $('accessType').value,
+    };
+    if (!body.name || !body.email) {
+      throw new Error('Name and email are required');
+    }
+    setStatus($('status'), 'Creating profile...', false);
+    const d = await api('/api/admin/users', { method: 'POST', body });
+    lastConfig = d.config || '';
+    lastFilename = safeFileName(d.user?.name || body.name) + '.conf';
+    $('configOut').classList.remove('hidden');
+    $('configOut').textContent = lastConfig;
+    $('downloadBtn').classList.remove('hidden');
+    setStatus($('status'), 'Profile created for ' + (d.user?.email || body.email), false);
+    await refreshUsers();
+  } catch (e) {
+    setStatus($('status'), e.message, true);
+  }
+}
+
+async function approvePayment(id) {
+  try {
+    await api('/api/admin/users/' + encodeURIComponent(id) + '/payment', {
+      method: 'POST',
+      body: { action: 'approve' },
+    });
+    await refreshUsers();
+  } catch (e) {
+    setStatus($('status'), e.message, true);
+  }
+}
+
+async function revokeUser(id) {
+  if (!confirm('Revoke user ' + id + '?')) return;
+  try {
+    await api('/api/admin/users/' + encodeURIComponent(id), { method: 'DELETE' });
+    await refreshUsers();
+  } catch (e) {
+    setStatus($('status'), e.message, true);
+  }
+}
+
+async function openApp() {
+  try {
+    await api('/api/auth/session');
+    $('loginPanel').classList.add('hidden');
+    $('appPanel').classList.remove('hidden');
+    await Promise.all([loadSecurity(), refreshUsers()]);
+  } catch (e) {
+    logout();
+  }
+}
+
+window.approvePayment = approvePayment;
+window.revokeUser = revokeUser;
+
+(function init() {
+  if (window.location.origin.startsWith('http')) {
+    $('api').value = window.location.origin;
+  }
+  const savedUser = localStorage.getItem('phantom_admin_user');
+  if (savedUser) $('user').value = savedUser;
+
+  $('healthBtn').addEventListener('click', testApi);
+  $('loginBtn').addEventListener('click', login);
+  $('logoutBtn').addEventListener('click', logout);
+  $('refreshBtn').addEventListener('click', refreshUsers);
+  $('createBtn').addEventListener('click', createUser);
+  $('downloadBtn').addEventListener('click', downloadConfig);
+
+  if (authToken) {
+    openApp();
+  }
+})();
+</script>
+</body>
+</html>

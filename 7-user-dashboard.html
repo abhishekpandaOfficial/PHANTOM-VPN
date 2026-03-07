@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PHANTOM VPN Profile</title>
+<meta name="description" content="View your PHANTOM VPN profile, monitor connection state, follow setup steps, and continue from trial to paid access.">
+<link rel="canonical" href="https://phantom.origixcloud.com/profile">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#071117;
+  --panel:#0f1e28;
+  --panel2:#132631;
+  --line:#244454;
+  --text:#e5f4fa;
+  --muted:#86a7b8;
+  --mint:#24d8ac;
+  --cyan:#57d7ff;
+  --gold:#ffd96a;
+  --orange:#ff9158;
+  --red:#ff7187;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  min-height:100vh;
+  color:var(--text);
+  font-family:'JetBrains Mono',monospace;
+  background:
+    radial-gradient(circle at top left, rgba(36,216,172,.12), transparent 28%),
+    radial-gradient(circle at top right, rgba(87,215,255,.1), transparent 24%),
+    linear-gradient(180deg, #071015 0%, #09151d 100%);
+}
+.wrap{max-width:1160px;margin:0 auto;padding:28px 20px 70px}
+header{
+  display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap;margin-bottom:18px
+}
+h1{font-family:'Outfit',sans-serif;font-size:40px}
+.sub{color:var(--muted);font-size:13px;line-height:1.7;max-width:64ch}
+.link{color:var(--cyan);text-decoration:none;font-size:12px}
+.grid{display:grid;grid-template-columns:1.15fr .85fr;gap:14px}
+.panel{
+  background:linear-gradient(160deg,var(--panel),var(--panel2));
+  border:1px solid var(--line);
+  border-radius:22px;
+  padding:18px;
+  box-shadow:0 22px 48px rgba(0,0,0,.22);
+}
+.panel h2{font-family:'Outfit',sans-serif;font-size:24px;margin-bottom:12px}
+.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.tile{
+  padding:14px;border-radius:16px;border:1px solid rgba(36,68,84,.9);background:rgba(5,14,20,.42)
+}
+.tile span{display:block;font-size:11px;color:var(--muted);margin-bottom:8px}
+.tile strong{font-family:'Outfit',sans-serif;font-size:28px}
+.status-pill{
+  display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;font-size:12px;font-weight:700
+}
+.status-pill.active{background:rgba(36,216,172,.1);border:1px solid rgba(36,216,172,.28);color:var(--mint)}
+.status-pill.suspended{background:rgba(255,145,88,.1);border:1px solid rgba(255,145,88,.25);color:var(--orange)}
+.status-pill.revoked{background:rgba(255,113,135,.1);border:1px solid rgba(255,113,135,.28);color:var(--red)}
+.mono{font-size:12px;word-break:break-all}
+.helper{color:var(--muted);font-size:12px;line-height:1.7}
+.timeline{display:grid;gap:10px;margin-top:12px}
+.step{
+  padding:12px 14px;border:1px solid rgba(36,68,84,.85);border-radius:16px;background:rgba(7,17,23,.45)
+}
+.step strong{display:block;font-family:'Outfit',sans-serif;font-size:16px;margin-bottom:4px}
+label{display:block;font-size:11px;color:var(--muted);margin:10px 0 6px}
+input{
+  width:100%;padding:11px 12px;border-radius:14px;border:1px solid #254453;background:#071117;color:var(--text);font-family:inherit;outline:none
+}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;padding:10px 14px;border-radius:999px;border:1px solid #2a5367;
+  background:transparent;color:var(--text);text-decoration:none;cursor:pointer;font-family:inherit;font-size:13px;
+}
+.btn.main{background:linear-gradient(90deg,#23d8ac,#2b98d9);border:none;color:#061117}
+.btn.warn{border-color:#6d4a22;color:#ffd96a}
+.status{min-height:18px;margin-top:12px;font-size:12px}
+.status.ok{color:var(--mint)}
+.status.err{color:var(--red)}
+.qr-box{
+  min-height:220px;background:#fff;border-radius:18px;padding:14px;display:flex;align-items:center;justify-content:center;
+}
+.hidden{display:none!important}
+@media(max-width:980px){
+  .grid,.cards{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Your PHANTOM Monitor</h1>
+      <p class="sub">Track remaining trial time, connection status, and payment state. Reconnecting does not reset the free quota: PHANTOM resumes from the time already consumed.</p>
+    </div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <a class="link" href="/vpn">Back to PHANTOM VPN</a>
+      <a class="link" href="/docs">Open Setup Docs</a>
+    </div>
+  </header>
+
+  <div class="grid">
+    <section class="panel">
+      <h2>Live Access State</h2>
+      <div class="cards">
+        <div class="tile"><span>User</span><strong id="userName">-</strong></div>
+        <div class="tile"><span>Status</span><div id="statusPill" class="status-pill active">Checking…</div></div>
+        <div class="tile"><span>Free Time Left</span><strong id="remaining">-</strong></div>
+        <div class="tile"><span>Connected This Session</span><strong id="sessionTime">-</strong></div>
+        <div class="tile"><span>Last Endpoint</span><div class="mono" id="endpoint">-</div></div>
+        <div class="tile"><span>Next Free Trial</span><div class="mono" id="eligible">-</div></div>
+      </div>
+
+      <div style="margin-top:16px">
+        <h2 style="font-size:20px">Setup Guide</h2>
+        <div class="timeline">
+          <div class="step"><strong>Import your VPN</strong>Use the QR code or downloaded file inside the WireGuard app. The QR shown here is the same VPN profile generated during signup, if this browser still has it.</div>
+          <div class="step"><strong>Connect and verify</strong>Turn the tunnel on in WireGuard. This page refreshes every few seconds and shows your live session duration and access state.</div>
+          <div class="step"><strong>Continue access</strong>When the free hour is consumed or the 15-day cycle ends, pay with Razorpay or submit a manual payment reference. Approval reactivates the same profile.</div>
+          <div class="step"><strong>TOTP note</strong>You do not need a TOTP code on this page. Authenticator codes are only for PHANTOM admin access.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Profile</h2>
+      <div class="helper" id="profileCopy">Loading your PHANTOM profile…</div>
+      <div style="margin-top:12px" class="mono" id="userIdText">User ID: -</div>
+      <div style="margin-top:6px" class="mono" id="emailText">Email: -</div>
+      <div style="margin-top:6px" class="mono" id="paymentText">Payment: -</div>
+
+      <div style="margin-top:18px">
+        <h2 style="font-size:20px">Mobile QR Import</h2>
+        <div class="qr-box" id="qrBox"><span style="color:#111">No local config found yet.</span></div>
+      </div>
+
+      <div style="margin-top:18px">
+        <h2 style="font-size:20px">Payment</h2>
+        <p class="helper" id="paymentHelp">Payment loading…</p>
+        <div class="actions">
+          <button class="btn main" id="payBtn">Pay with Razorpay</button>
+          <button class="btn warn" id="refreshBtn">Refresh Status</button>
+        </div>
+        <label for="paymentRef">Manual Payment Reference</label>
+        <input id="paymentRef" placeholder="UPI / invoice / bank transfer reference" />
+        <button class="btn" style="margin-top:10px" id="manualBtn">Submit Manual Reference</button>
+        <div id="payStatus" class="status"></div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
+<script>
+const params = new URLSearchParams(window.location.search);
+const apiRoot = window.location.origin;
+const userId = params.get('user') || localStorage.getItem('phantom_last_user_id') || '';
+let latestUser = null;
+let qr = null;
+
+function fmtDuration(totalSeconds) {
+  if (totalSeconds === null || totalSeconds === undefined) return 'Paid';
+  const s = Math.max(0, Number(totalSeconds || 0));
+  const h = String(Math.floor(s / 3600)).padStart(2, '0');
+  const m = String(Math.floor((s % 3600) / 60)).padStart(2, '0');
+  const sec = String(s % 60).padStart(2, '0');
+  return `${h}:${m}:${sec}`;
+}
+
+function setStatus(msg, isErr) {
+  const el = document.getElementById('payStatus');
+  el.textContent = msg;
+  el.className = 'status ' + (isErr ? 'err' : 'ok');
+}
+
+async function publicApi(path, opts = {}) {
+  const res = await fetch(apiRoot + path, {
+    method: opts.method || 'GET',
+    headers: opts.body ? { 'Content-Type': 'application/json' } : undefined,
+    body: opts.body ? JSON.stringify(opts.body) : undefined,
+  });
+  let data = {};
+  try { data = await res.json(); } catch (e) {}
+  if (!res.ok) throw new Error(data.error || ('HTTP ' + res.status));
+  return data;
+}
+
+function renderQr() {
+  const config = localStorage.getItem('phantom_user_config_' + userId);
+  const box = document.getElementById('qrBox');
+  box.innerHTML = '';
+  if (!config) {
+    box.innerHTML = '<span style="color:#111;padding:0 12px;text-align:center">This browser does not have the original config. Use the file you downloaded during signup.</span>';
+    return;
+  }
+  if (window.QRCode) {
+    qr = new QRCode(box, { text: config, width: 190, height: 190 });
+  } else {
+    box.innerHTML = '<span style="color:#111">Reload once if the QR does not appear.</span>';
+  }
+}
+
+function renderUser(user, cfg) {
+  latestUser = user;
+  document.getElementById('userName').textContent = user.name || '-';
+  document.getElementById('remaining').textContent = user.remainingTrialSeconds === null ? 'Paid' : fmtDuration(user.remainingTrialSeconds);
+  document.getElementById('sessionTime').textContent = fmtDuration(user.currentSessionSeconds || 0);
+  document.getElementById('endpoint').textContent = user.lastKnownEndpoint || 'No active endpoint yet';
+  document.getElementById('eligible').textContent = user.nextTrialEligibleAt || 'Active paid access';
+  document.getElementById('userIdText').textContent = 'User ID: ' + (user.id || '-');
+  document.getElementById('emailText').textContent = 'Email: ' + (user.email || '-');
+  document.getElementById('paymentText').textContent = 'Payment: ' + (user.paymentStatus || '-');
+  document.getElementById('profileCopy').textContent = user.currentConnected
+    ? 'Your tunnel is active right now.'
+    : (user.suspendedReason || 'Connect your WireGuard profile to start using PHANTOM.');
+
+  const pill = document.getElementById('statusPill');
+  pill.textContent = user.currentConnected ? 'Connected' : user.status;
+  pill.className = 'status-pill ' + (user.status === 'revoked' ? 'revoked' : user.status === 'suspended' ? 'suspended' : 'active');
+
+  const payText = cfg.razorpayEnabled
+    ? `Razorpay is ready. ${cfg.razorpayPlanName} costs ${(cfg.razorpayAmount / 100).toFixed(2)} ${cfg.razorpayCurrency}.`
+    : `Razorpay is not configured yet. Use manual payment reference or contact ${cfg.paymentLink}.`;
+  document.getElementById('paymentHelp').textContent = payText;
+  document.getElementById('payBtn').disabled = !cfg.razorpayEnabled || user.paymentStatus === 'paid';
+}
+
+async function refreshStatus() {
+  if (!userId) {
+    setStatus('User ID missing. Open this page from your signup success link or visit /docs for the first-time setup flow.', true);
+    return;
+  }
+  try {
+    const d = await publicApi('/api/public/users/' + encodeURIComponent(userId));
+    renderUser(d.user || {}, d);
+  } catch (e) {
+    setStatus(e.message, true);
+  }
+}
+
+async function submitManualReference() {
+  try {
+    if (!userId) throw new Error('User ID missing');
+    const reference = document.getElementById('paymentRef').value.trim();
+    if (!reference) throw new Error('Payment reference is required');
+    const d = await publicApi('/api/public/users/' + encodeURIComponent(userId) + '/payment-request', {
+      method: 'POST',
+      body: { reference },
+    });
+    setStatus(d.message || 'Payment submitted for review', false);
+    await refreshStatus();
+  } catch (e) {
+    setStatus(e.message, true);
+  }
+}
+
+async function payWithRazorpay() {
+  try {
+    if (!userId) throw new Error('User ID missing');
+    const orderData = await publicApi('/api/public/users/' + encodeURIComponent(userId) + '/razorpay-order', { method: 'POST', body: {} });
+    const options = {
+      key: orderData.key,
+      amount: orderData.amount,
+      currency: orderData.currency,
+      name: orderData.name,
+      description: orderData.description,
+      order_id: orderData.order.id,
+      prefill: {
+        name: orderData.user?.name || '',
+        email: orderData.user?.email || '',
+      },
+      theme: { color: '#23d8ac' },
+      handler: async function (response) {
+        try {
+          const verified = await publicApi('/api/public/payments/verify', {
+            method: 'POST',
+            body: {
+              userId,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+            },
+          });
+          setStatus('Payment verified. Your VPN profile is active.', false);
+          renderUser(verified.user, orderData);
+        } catch (e) {
+          setStatus(e.message, true);
+        }
+      },
+    };
+    const rzp = new window.Razorpay(options);
+    rzp.open();
+  } catch (e) {
+    setStatus(e.message, true);
+  }
+}
+
+document.getElementById('refreshBtn').addEventListener('click', refreshStatus);
+document.getElementById('manualBtn').addEventListener('click', submitManualReference);
+document.getElementById('payBtn').addEventListener('click', payWithRazorpay);
+
+renderQr();
+refreshStatus();
+setInterval(refreshStatus, 5000);
+</script>
+</body>
+</html>

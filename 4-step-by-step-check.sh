@@ -152,7 +152,7 @@ if (( SKIP_DEPLOY == 1 )); then
   warn "Skipping deploy because --skip-deploy was provided."
 else
   SCP_LOG="$OUT_DIR/scp.log"
-  if scp 1-deploy.sh 2-monitoring-server.js 3-dashboard.html "$TARGET:/root/" >"$SCP_LOG" 2>&1; then
+  if scp 1-deploy.sh 2-monitoring-server.js 3-dashboard.html 5-landing.html 6-admin.html 7-user-dashboard.html 8-routing.html 9-docs.html "$TARGET:/root/" >"$SCP_LOG" 2>&1; then
     pass "Deployment files copied."
   else
     if is_password_expired_output "$SCP_LOG"; then

@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PHANTOM VPN — Live Dashboard</title>
+<title>PHANTOM VPN Admin Dashboard</title>
+<meta name="description" content="Admin monitoring dashboard for PHANTOM VPN. Sign in with the admin email and current authenticator code to view live routing and security telemetry.">
+<link rel="canonical" href="https://phantom.origixcloud.com/dashboard">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700&family=Syne:wght@400;700;800&family=Syne+Mono&display=swap" rel="stylesheet">
 <style>
 /* ─── DESIGN SYSTEM ─────────────────────────────────── */
@@ -360,11 +362,11 @@ canvas#netChart{width:100%;height:100%}
 
 <!-- Config bar shows when not connected to server -->
 <div id="config-bar">
-  ⚠ NOT CONNECTED TO SERVER — <span>Enter your DigitalOcean droplet address:</span>
+  ⚠ ADMIN LOGIN REQUIRED — <span>This page is for PHANTOM administrators. End users should start at /vpn, create a profile, and import the WireGuard QR.</span>
   <input id="server-url-input" type="text" placeholder="http://YOUR_DROPLET_IP:7777" value="">
-  <input id="api-user-input" type="text" placeholder="phantom" value="phantom" style="width:100px">
-  <input id="api-pass-input" type="password" placeholder="password" style="width:130px">
-  <button class="btn btn-c btn-sm" onclick="saveServerConfig()">CONNECT</button>
+  <input id="api-user-input" type="text" placeholder="hello@abhishekpanda.com" value="hello@abhishekpanda.com" style="width:220px">
+  <input id="api-pass-input" type="password" placeholder="authenticator code" style="width:160px">
+  <button class="btn btn-c btn-sm" onclick="saveServerConfig()">SIGN IN</button>
 </div>
 
 <div class="root">
@@ -556,13 +558,14 @@ canvas#netChart{width:100%;height:100%}
 <script>
 // ─── CONFIG ─────────────────────────────────────────────
 let SERVER_URL = localStorage.getItem('phantom_server') || '';
-let API_USER   = localStorage.getItem('phantom_user')   || 'phantom';
-let API_PASS   = localStorage.getItem('phantom_pass')   || '';
+let API_USER   = localStorage.getItem('phantom_user')   || 'hello@abhishekpanda.com';
+let AUTH_TOKEN = localStorage.getItem('phantom_admin_token') || '';
 let autoRotate = false;
 let rotInterval = 30;
 let rotCountdown = 30;
 let rotTimer = null;
 let connectedToStream = false;
+let pollingStarted = false;
 let prevRxBytes = 0, prevTxBytes = 0;
 let lastRxRate = 0, lastTxRate = 0;
 
@@ -572,11 +575,19 @@ let rxHistory = new Array(MAX_POINTS).fill(0);
 let txHistory = new Array(MAX_POINTS).fill(0);
 
 // Show config bar if no server configured
-if (!SERVER_URL) document.getElementById('config-bar').classList.remove('hidden');
-else {
-  document.getElementById('server-url-input').value = SERVER_URL;
-  document.getElementById('config-bar').classList.add('hidden');
+if (!SERVER_URL && window.location.origin.startsWith('http')) {
+  SERVER_URL = window.location.origin;
+  localStorage.setItem('phantom_server', SERVER_URL);
 }
+
+function updateConfigBarVisibility() {
+  const shouldShow = !SERVER_URL || !AUTH_TOKEN;
+  document.getElementById('config-bar').classList.toggle('hidden', !shouldShow);
+}
+
+document.getElementById('server-url-input').value = SERVER_URL;
+document.getElementById('api-user-input').value = API_USER;
+updateConfigBarVisibility();
 
 // ─── CANVAS CHART ────────────────────────────────────────
 const canvas = document.getElementById('netChart');
@@ -627,33 +638,31 @@ let evtSource = null;
 
 function connectSSE() {
   if (!SERVER_URL) return;
-  const auth = btoa(API_USER + ':' + API_PASS);
-  const url  = `${SERVER_URL}/stream`;
-
-  // EventSource doesn't support custom headers, use URL-encoded auth trick
-  // We'll poll the status API every 5s as fallback and use /stream with query param
+  // The dashboard uses bearer-token admin sessions. After sign-in there is no stored
+  // password value to reuse, so polling is the reliable authenticated transport here.
   startPolling();
 }
 
 function startPolling() {
-  if (!SERVER_URL) return;
+  if (!SERVER_URL || pollingStarted) return;
+  pollingStarted = true;
   setInterval(fetchStatus, 5000);
+  setInterval(fetchThreats, 10000);
   fetchStatus();
 }
 
 async function fetchStatus() {
   if (!SERVER_URL) return;
   try {
-    const auth = btoa(API_USER + ':' + API_PASS);
     const res = await fetch(`${SERVER_URL}/api/status`, {
-      headers: { 'Authorization': 'Basic ' + auth }
+      headers: { 'Authorization': 'Bearer ' + AUTH_TOKEN }
     });
     if (!res.ok) throw new Error('Auth failed');
     const data = await res.json();
     updateDashboard(data);
     if (!connectedToStream) {
       connectedToStream = true;
-      document.getElementById('config-bar').classList.add('hidden');
+      updateConfigBarVisibility();
       setStreamStatus('online');
       addLog('ok', '[SYS]', 'Connected to PHANTOM server at ' + SERVER_URL);
     }
@@ -663,23 +672,25 @@ async function fetchStatus() {
       addLog('err', '[SYS]', 'Lost connection to server: ' + e.message);
       connectedToStream = false;
     }
+    if (String(e.message).includes('Auth')) {
+      AUTH_TOKEN = '';
+      localStorage.removeItem('phantom_admin_token');
+      updateConfigBarVisibility();
+    }
   }
 }
 
 async function fetchThreats() {
   if (!SERVER_URL) return;
   try {
-    const auth = btoa(API_USER + ':' + API_PASS);
     const res = await fetch(`${SERVER_URL}/api/threats`, {
-      headers: { 'Authorization': 'Basic ' + auth }
+      headers: { 'Authorization': 'Bearer ' + AUTH_TOKEN }
     });
     if (!res.ok) return;
     const data = await res.json();
     renderThreats(data.threats || []);
   } catch(e) {}
 }
-setInterval(fetchThreats, 10000);
-
 // ─── UPDATE DASHBOARD ────────────────────────────────────
 function updateDashboard(d) {
   // IP
@@ -808,12 +819,11 @@ function renderPeers(peers) {
 
 // ─── API CALLS ────────────────────────────────────────────
 async function apiPost(endpoint) {
-  if (!SERVER_URL) { notify('⚠ Enter server URL first', true); return; }
+  if (!SERVER_URL || !AUTH_TOKEN) { notify('⚠ Sign in first', true); return; }
   try {
-    const auth = btoa(API_USER + ':' + API_PASS);
     const res = await fetch(SERVER_URL + endpoint, {
       method: 'POST',
-      headers: { 'Authorization': 'Basic ' + auth }
+      headers: { 'Authorization': 'Bearer ' + AUTH_TOKEN }
     });
     const d = await res.json();
     if (d.success !== false) {
@@ -888,17 +898,39 @@ function notify(msg, err=false) {
   el._t = setTimeout(() => el.classList.remove('show'), 3500);
 }
 
-function saveServerConfig() {
+async function saveServerConfig() {
   SERVER_URL = document.getElementById('server-url-input').value.trim().replace(/\/$/, '');
   API_USER   = document.getElementById('api-user-input').value.trim();
-  API_PASS   = document.getElementById('api-pass-input').value.trim();
+  const password = document.getElementById('api-pass-input').value.trim();
+  if (!SERVER_URL || !API_USER || !password) {
+    notify('⚠ Server, username, and authenticator code are required', true);
+    return;
+  }
   localStorage.setItem('phantom_server', SERVER_URL);
   localStorage.setItem('phantom_user',   API_USER);
-  localStorage.setItem('phantom_pass',   API_PASS);
-  document.getElementById('config-bar').classList.add('hidden');
-  connectedToStream = false;
-  fetchStatus();
-  notify('🔗 Connecting to ' + SERVER_URL);
+  try {
+    const res = await fetch(SERVER_URL + '/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: API_USER, password }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Login failed');
+    AUTH_TOKEN = data.token || '';
+    localStorage.setItem('phantom_admin_token', AUTH_TOKEN);
+    document.getElementById('api-pass-input').value = '';
+    updateConfigBarVisibility();
+    connectedToStream = false;
+    connectSSE();
+    notify('🔗 Signed in to ' + SERVER_URL);
+  } catch (e) {
+    const msg = String(e.message || '');
+    if (msg.includes('Invalid username or authenticator code')) {
+      notify('⚠ Use the admin email and the current six-digit authenticator code. User VPN profiles do not sign in here.', true);
+      return;
+    }
+    notify('⚠ ' + msg, true);
+  }
 }
 
 // Clock
@@ -908,9 +940,9 @@ setInterval(() => {
 }, 1000);
 
 // Initial
-addLog('info', '[SYS]', 'PHANTOM Dashboard initialized. Enter server URL to connect.');
-if (SERVER_URL) { connectSSE(); }
-else { addLog('warn', '[SYS]', 'No server configured. Enter your DigitalOcean IP above.'); }
+addLog('info', '[SYS]', 'PHANTOM admin dashboard initialized. Sign in with the admin email and current authenticator code.');
+if (SERVER_URL && AUTH_TOKEN) { connectSSE(); }
+else { addLog('warn', '[SYS]', 'No admin session found. End users should begin at /vpn.'); }
 drawChart();
 setInterval(drawChart, 2000);
 </script>

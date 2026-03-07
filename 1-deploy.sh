@@ -31,9 +31,20 @@ WG_SUBNET="10.8.0.0/24"
 WG_SERVER_IP="10.8.0.1"
 WG_CLIENT_IP="10.8.0.2"
 SERVER_IFACE=$(ip -4 route ls | grep default | grep -Po '(?<=dev )(\S+)' | head -1)
-DASHBOARD_USER="phantom"
-DASHBOARD_PASS="$(openssl rand -base64 16)"  # auto-generated, shown at end
+ADMIN_USER="hello@abhishekpanda.com"
+ADMIN_TOTP_SECRET="$(head -c 20 /dev/urandom | base32 | tr -d '=\n')"
+FREE_TRIAL_HOURS="1"
+FREE_TRIAL_RESET_DAYS="15"
+PAYMENT_LINK="mailto:${ADMIN_USER}?subject=PHANTOM%20VPN%20Payment"
+PLAN_PRICE_LABEL="Payment required after trial"
+RAZORPAY_KEY_ID=""
+RAZORPAY_KEY_SECRET=""
+RAZORPAY_PLAN_AMOUNT="49900"
+RAZORPAY_CURRENCY="INR"
+RAZORPAY_PLAN_NAME="PHANTOM VPN Premium"
+RAZORPAY_PLAN_DESCRIPTION="PHANTOM VPN paid access"
 API_SECRET="$(openssl rand -hex 32)"
+SYSTEMD_PAYMENT_LINK="${PAYMENT_LINK//%/%%}"
 # ---- END CONFIG ----
 
 log "Detected network interface: $SERVER_IFACE"
@@ -297,6 +308,11 @@ log "Step 8/9: Installing monitoring API server..."
 mkdir -p /opt/phantom-vpn
 cp /root/2-monitoring-server.js /opt/phantom-vpn/server.js 2>/dev/null || true
 cp /root/3-dashboard.html /opt/phantom-vpn/dashboard.html 2>/dev/null || true
+cp /root/5-landing.html /opt/phantom-vpn/landing.html 2>/dev/null || true
+cp /root/6-admin.html /opt/phantom-vpn/admin.html 2>/dev/null || true
+cp /root/7-user-dashboard.html /opt/phantom-vpn/portal.html 2>/dev/null || true
+cp /root/8-routing.html /opt/phantom-vpn/routing.html 2>/dev/null || true
+cp /root/9-docs.html /opt/phantom-vpn/docs.html 2>/dev/null || true
 
 cat > /opt/phantom-vpn/package.json <<EOF
 {
@@ -327,9 +343,23 @@ RestartSec=5
 Environment=NODE_ENV=production
 Environment=PORT=${MONITOR_PORT}
 Environment=API_SECRET=${API_SECRET}
-Environment=DASHBOARD_USER=${DASHBOARD_USER}
-Environment=DASHBOARD_PASS=${DASHBOARD_PASS}
+Environment=ADMIN_USER=${ADMIN_USER}
+Environment=ADMIN_TOTP_SECRET=${ADMIN_TOTP_SECRET}
+Environment=FREE_TRIAL_HOURS=${FREE_TRIAL_HOURS}
+Environment=FREE_TRIAL_RESET_DAYS=${FREE_TRIAL_RESET_DAYS}
+Environment="PAYMENT_LINK=${SYSTEMD_PAYMENT_LINK}"
+Environment="PLAN_PRICE_LABEL=${PLAN_PRICE_LABEL}"
+Environment=RAZORPAY_KEY_ID=${RAZORPAY_KEY_ID}
+Environment=RAZORPAY_KEY_SECRET=${RAZORPAY_KEY_SECRET}
+Environment=RAZORPAY_PLAN_AMOUNT=${RAZORPAY_PLAN_AMOUNT}
+Environment=RAZORPAY_CURRENCY=${RAZORPAY_CURRENCY}
+Environment="RAZORPAY_PLAN_NAME=${RAZORPAY_PLAN_NAME}"
+Environment="RAZORPAY_PLAN_DESCRIPTION=${RAZORPAY_PLAN_DESCRIPTION}"
 Environment=TOR_CONTROL_PASSWORD=${TOR_PASS}
+Environment=WG_SUBNET=${WG_SUBNET}
+Environment=WG_DNS=${WG_SERVER_IP}
+Environment=WG_PUBLIC_ENDPOINT=${SERVER_IP}:${VPN_PORT}
+Environment=WG_SERVER_PUBLIC_KEY=${SERVER_PUB}
 
 [Install]
 WantedBy=multi-user.target
@@ -395,6 +425,10 @@ EOF
 # Install qrencode for mobile QR code
 apt-get install -y -qq qrencode
 qrencode -t ansiutf8 < /root/phantom-client.conf
+ADMIN_TOTP_URI="otpauth://totp/PHANTOM%20VPN:${ADMIN_USER//@/%40}?secret=${ADMIN_TOTP_SECRET}&issuer=PHANTOM%20VPN"
+echo ""
+log "Scan this QR with Google Authenticator / Authy / 1Password for admin login:"
+qrencode -t ansiutf8 "${ADMIN_TOTP_URI}"
 
 # Save all credentials
 cat > /root/phantom-credentials.txt <<EOF
@@ -405,8 +439,15 @@ Server IP          : ${SERVER_IP}
 WireGuard Port     : ${VPN_PORT}
 Monitor API Port   : ${MONITOR_PORT}
 Monitor API URL    : http://${SERVER_IP}:${MONITOR_PORT}
-Dashboard User     : ${DASHBOARD_USER}
-Dashboard Password : ${DASHBOARD_PASS}
+Admin User         : ${ADMIN_USER}
+Admin Auth Mode    : TOTP via authenticator app
+Admin TOTP Secret  : ${ADMIN_TOTP_SECRET}
+Admin TOTP URI     : ${ADMIN_TOTP_URI}
+Free Trial Hours   : ${FREE_TRIAL_HOURS}
+Trial Reset Days   : ${FREE_TRIAL_RESET_DAYS}
+Payment Link       : ${PAYMENT_LINK}
+Razorpay Key ID    : ${RAZORPAY_KEY_ID:-not-set}
+Razorpay Amount    : ${RAZORPAY_PLAN_AMOUNT} ${RAZORPAY_CURRENCY}
 API Secret         : ${API_SECRET}
 Tor Control Pass   : ${TOR_PASS}
 Server Public Key  : ${SERVER_PUB}
@@ -431,7 +472,13 @@ cat /root/phantom-credentials.txt
 echo ""
 log "Client config saved to: /root/phantom-client.conf"
 log "Scan the QR code above with WireGuard mobile app"
+log "Admin login: use ${ADMIN_USER} with the current authenticator code"
 log "Dashboard API: http://${SERVER_IP}:${MONITOR_PORT}"
+log "VPN page: http://${SERVER_IP}:${MONITOR_PORT}/vpn"
+log "User profile: http://${SERVER_IP}:${MONITOR_PORT}/profile"
+log "User admin: http://${SERVER_IP}:${MONITOR_PORT}/admin"
+log "Docs page: http://${SERVER_IP}:${MONITOR_PORT}/docs"
+log "Routing page: http://${SERVER_IP}:${MONITOR_PORT}/routing"
 log ""
-warn "Open dashboard: Set SERVER_URL in 3-dashboard.html to: http://${SERVER_IP}:${MONITOR_PORT}"
+warn "Open dashboard: sign in with ${ADMIN_USER} and your authenticator code at http://${SERVER_IP}:${MONITOR_PORT}/dashboard"
 warn "Chrome Extension: Open extension Config tab and set Server URL to: http://${SERVER_IP}:${MONITOR_PORT}"
