@@ -502,6 +502,7 @@ let lastConfig = '';
 let lastFilename = '';
 let lastUserId = '';
 let qr = null;
+const QR_SAFE_TEXT_LIMIT = 2400;
 let wizardStep = 0;
 let wizardConnected = false;
 const wizardTotal = 5;
@@ -560,11 +561,22 @@ function waitForQRCodeLibrary(timeoutMs = 6000) {
 async function renderQrConfig() {
   const box = document.getElementById('qrBox');
   box.innerHTML = '<span style="color:#111">Preparing QR code...</span>';
+
+  if ((lastConfig || '').length > QR_SAFE_TEXT_LIMIT) {
+    box.innerHTML = '<div style="display:flex;flex-direction:column;gap:10px;align-items:center;padding:8px;text-align:center;color:#111"><span>QR is unavailable for this profile because the config is too large. Use the download button to import the .conf file in WireGuard.</span></div>';
+    return false;
+  }
+
   const ready = await waitForQRCodeLibrary();
   box.innerHTML = '';
   if (ready) {
-    qr = new QRCode(box, { text: lastConfig, width: 190, height: 190 });
-    return true;
+    try {
+      qr = new QRCode(box, { text: lastConfig, width: 190, height: 190 });
+      return true;
+    } catch (e) {
+      box.innerHTML = '<div style="display:flex;flex-direction:column;gap:10px;align-items:center;padding:8px;text-align:center;color:#111"><span>QR generation failed for this profile. Use the download button to import the .conf file in WireGuard.</span></div>';
+      return false;
+    }
   }
   box.innerHTML = '<div style="display:flex;flex-direction:column;gap:10px;align-items:center;padding:8px;text-align:center;color:#111"><span>QR could not load yet. Use download now or retry QR generation.</span><button class="btn" id="qrRetryBtn" type="button" style="color:#111;border-color:#888">Retry QR</button></div>';
   const retryBtn = document.getElementById('qrRetryBtn');
@@ -651,10 +663,14 @@ async function createTrial() {
     lastUserId = d.user?.id || '';
     localStorage.setItem('phantom_last_user_id', lastUserId);
     localStorage.setItem('phantom_user_config_' + lastUserId, lastConfig);
-    await renderQrConfig();
+    const qrReady = await renderQrConfig();
     openWizard(portalUrl);
 
-    setStatus('trialStatus', 'Profile created. Scan QR in WireGuard, then open your PHANTOM profile page.', false);
+    if (qrReady) {
+      setStatus('trialStatus', 'Profile created. Scan QR in WireGuard, then open your PHANTOM profile page.', false);
+    } else {
+      setStatus('trialStatus', 'Profile created. QR is unavailable for this config size, so download and import the .conf file in WireGuard.', false);
+    }
   } catch (e) {
     setStatus('trialStatus', e.message, true);
   }
