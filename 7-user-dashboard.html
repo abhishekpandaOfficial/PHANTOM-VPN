@@ -13,17 +13,17 @@
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#071117;
-  --panel:#0f1e28;
-  --panel2:#132631;
-  --line:#244454;
-  --text:#e5f4fa;
-  --muted:#86a7b8;
-  --mint:#24d8ac;
-  --cyan:#57d7ff;
-  --gold:#ffd96a;
-  --orange:#ff9158;
-  --red:#ff7187;
+  --bg:#eef6fc;
+  --panel:#ffffff;
+  --panel2:#f3f9ff;
+  --line:#c9dced;
+  --text:#0f2534;
+  --muted:#587487;
+  --mint:#108f74;
+  --cyan:#147ec1;
+  --gold:#c18e1f;
+  --orange:#d86c3d;
+  --red:#d94e68;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{
@@ -31,9 +31,9 @@ body{
   color:var(--text);
   font-family:'JetBrains Mono',monospace;
   background:
-    radial-gradient(circle at top left, rgba(36,216,172,.12), transparent 28%),
-    radial-gradient(circle at top right, rgba(87,215,255,.1), transparent 24%),
-    linear-gradient(180deg, #071015 0%, #09151d 100%);
+    radial-gradient(circle at top left, rgba(36,216,172,.14), transparent 28%),
+    radial-gradient(circle at top right, rgba(87,215,255,.18), transparent 24%),
+    linear-gradient(180deg, #eef6fc 0%, #e8f1fb 100%);
 }
 .wrap{max-width:1160px;margin:0 auto;padding:28px 20px 70px}
 header{
@@ -50,13 +50,16 @@ h1{font-family:'Outfit',sans-serif;font-size:40px}
   border:1px solid var(--line);
   border-radius:22px;
   padding:18px;
-  box-shadow:0 22px 48px rgba(0,0,0,.22);
+  box-shadow:0 18px 36px rgba(19,63,92,.1);
+  animation:slideUp .55s ease both;
 }
 .panel h2{font-family:'Outfit',sans-serif;font-size:24px;margin-bottom:12px}
 .cards{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
 .tile{
-  padding:14px;border-radius:16px;border:1px solid rgba(36,68,84,.9);background:rgba(5,14,20,.42)
+  padding:14px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.88);
+  transition:transform .2s ease, box-shadow .2s ease;
 }
+.tile:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(16,76,121,.12)}
 .tile span{display:block;font-size:11px;color:var(--muted);margin-bottom:8px}
 .tile strong{font-family:'Outfit',sans-serif;font-size:28px}
 .status-pill{
@@ -69,12 +72,14 @@ h1{font-family:'Outfit',sans-serif;font-size:40px}
 .helper{color:var(--muted);font-size:12px;line-height:1.7}
 .timeline{display:grid;gap:10px;margin-top:12px}
 .step{
-  padding:12px 14px;border:1px solid rgba(36,68,84,.85);border-radius:16px;background:rgba(7,17,23,.45)
+  padding:12px 14px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.88);
+  transition:transform .2s ease, box-shadow .2s ease;
 }
+.step:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(16,76,121,.12)}
 .step strong{display:block;font-family:'Outfit',sans-serif;font-size:16px;margin-bottom:4px}
 label{display:block;font-size:11px;color:var(--muted);margin:10px 0 6px}
 input{
-  width:100%;padding:11px 12px;border-radius:14px;border:1px solid #254453;background:#071117;color:var(--text);font-family:inherit;outline:none
+  width:100%;padding:11px 12px;border-radius:14px;border:1px solid var(--line);background:#f7fbff;color:var(--text);font-family:inherit;outline:none
 }
 .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
 .btn{
@@ -90,6 +95,10 @@ input{
   min-height:220px;background:#fff;border-radius:18px;padding:14px;display:flex;align-items:center;justify-content:center;
 }
 .hidden{display:none!important}
+@keyframes slideUp{
+  from{opacity:0;transform:translateY(14px)}
+  to{opacity:1;transform:translateY(0)}
+}
 @media(max-width:980px){
   .grid,.cards{grid-template-columns:1fr}
 }

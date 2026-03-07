@@ -13,25 +13,25 @@
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#081218;
-  --panel:#10202d;
-  --panel2:#16303f;
-  --line:#25495c;
-  --text:#dceef6;
-  --muted:#82a7b8;
-  --green:#42d9a3;
-  --orange:#ff9a62;
-  --red:#ff6887;
-  --cyan:#52d8ff;
-  --gold:#ffd86c;
+  --bg:#eef6fc;
+  --panel:#ffffff;
+  --panel2:#f3f9ff;
+  --line:#c9dced;
+  --text:#0f2534;
+  --muted:#587487;
+  --green:#108f74;
+  --orange:#d86c3d;
+  --red:#d94e68;
+  --cyan:#147ec1;
+  --gold:#c18e1f;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{
   min-height:100vh;
   background:
-    radial-gradient(circle at top left, rgba(82,216,255,.14), transparent 34%),
-    radial-gradient(circle at top right, rgba(255,104,135,.12), transparent 30%),
-    linear-gradient(180deg, #071116 0%, #09161d 100%);
+    radial-gradient(circle at top left, rgba(82,216,255,.18), transparent 34%),
+    radial-gradient(circle at top right, rgba(255,104,135,.1), transparent 30%),
+    linear-gradient(180deg, #eef6fc 0%, #e8f1fb 100%);
   color:var(--text);
   font-family:'JetBrains Mono',monospace;
   padding:24px;
@@ -50,15 +50,16 @@ h1{font-family:'Outfit',sans-serif;font-size:38px;letter-spacing:.4px}
   border:1px solid var(--line);
   border-radius:18px;
   padding:16px;
-  box-shadow:0 18px 34px rgba(0,0,0,.18);
+  box-shadow:0 18px 36px rgba(19,63,92,.1);
+  animation:slideUp .55s ease both;
 }
 .panel h2{font-family:'Outfit',sans-serif;font-size:21px;margin-bottom:12px}
 label{display:block;font-size:11px;color:var(--muted);margin:10px 0 6px}
 input, textarea, select{
   width:100%;
-  background:#06131a;
+  background:#f7fbff;
   color:var(--text);
-  border:1px solid #224557;
+  border:1px solid var(--line);
   border-radius:12px;
   padding:10px 12px;
   font-family:'JetBrains Mono',monospace;
@@ -68,8 +69,8 @@ input, textarea, select{
 textarea{min-height:78px;resize:vertical}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 button{
-  border:1px solid #31586b;
-  background:#0b1820;
+  border:1px solid var(--line);
+  background:#f8fbff;
   color:var(--text);
   padding:10px 12px;
   border-radius:12px;
@@ -79,9 +80,9 @@ button{
   transition:.18s ease;
 }
 button:hover{transform:translateY(-1px)}
-button.main{background:#083328;border-color:#3dc8a1;color:#9ff3d2}
-button.warn{background:#2a131b;border-color:#70414e;color:#ffadc1}
-button.alt{background:#0c1d28;border-color:#2f6a82;color:#8ddffb}
+button.main{background:linear-gradient(90deg,#2dcda4,#2f8bcf);border:none;color:#061621}
+button.warn{background:#fff5f7;border-color:#f0cad5;color:#ba2f4c}
+button.alt{background:#f2f8ff;border-color:#cfe2f0;color:#0f6eab}
 button.slim{padding:7px 9px;font-size:11px;border-radius:10px}
 .status{min-height:18px;margin-top:12px;font-size:12px}
 .status.ok{color:var(--green)}
@@ -90,11 +91,13 @@ button.slim{padding:7px 9px;font-size:11px;border-radius:10px}
 .hidden{display:none!important}
 .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 .info-card{
-  background:rgba(5,14,20,.42);
-  border:1px solid rgba(37,73,92,.8);
+  background:rgba(255,255,255,.88);
+  border:1px solid var(--line);
   border-radius:14px;
   padding:13px;
+  transition:transform .2s ease, box-shadow .2s ease;
 }
+.info-card:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(16,76,121,.12)}
 .info-card strong{
   display:block;
   font-family:'Outfit',sans-serif;
@@ -106,7 +109,7 @@ button.slim{padding:7px 9px;font-size:11px;border-radius:10px}
 .layout{display:grid;grid-template-columns:1.1fr .9fr;gap:14px}
 .table-wrap{overflow:auto;border:1px solid var(--line);border-radius:14px}
 table{width:100%;border-collapse:collapse;min-width:980px;font-size:12px}
-th,td{padding:10px;border-bottom:1px solid #1f3b49;text-align:left;vertical-align:top}
+th,td{padding:10px;border-bottom:1px solid #d8e7f2;text-align:left;vertical-align:top}
 th{font-size:11px;color:var(--muted);font-weight:600}
 .badge{
   display:inline-flex;
@@ -126,8 +129,8 @@ th{font-size:11px;color:var(--muted);font-weight:600}
 .actions{display:flex;gap:6px;flex-wrap:wrap}
 pre{
   margin-top:10px;
-  background:#041018;
-  border:1px solid #21495c;
+  background:#f2f8ff;
+  border:1px solid var(--line);
   border-radius:14px;
   padding:12px;
   overflow:auto;
@@ -148,6 +151,10 @@ pre{
   padding:10px;
 }
 .security-grid{display:grid;grid-template-columns:200px 1fr;gap:14px;align-items:start}
+@keyframes slideUp{
+  from{opacity:0;transform:translateY(14px)}
+  to{opacity:1;transform:translateY(0)}
+}
 @media (max-width:1100px){
   .grid,.layout,.security-grid{grid-template-columns:1fr}
   .cards{grid-template-columns:1fr}
