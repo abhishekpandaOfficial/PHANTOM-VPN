@@ -6,6 +6,8 @@
 <title>PHANTOM VPN | Private VPN Access and First-Time Setup</title>
 <meta name="description" content="Learn how PHANTOM VPN works, create your account, import your WireGuard profile, and follow a clear first-time onboarding flow.">
 <link rel="canonical" href="https://phantom.origixcloud.com/vpn">
+<link rel="icon" type="image/png" sizes="32x32" href="/brand/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/brand/favicon-16.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
@@ -53,8 +55,9 @@ nav{
   padding:14px 16px;border:1px solid rgba(32,56,70,.9);border-radius:18px;
   background:rgba(9,18,24,.72);backdrop-filter:blur(12px);
 }
-.brand{font-family:'Outfit',sans-serif;font-size:20px;font-weight:800;letter-spacing:1px}
+.brand{display:flex;align-items:center;gap:10px;font-family:'Outfit',sans-serif;font-size:20px;font-weight:800;letter-spacing:1px}
 .brand span{color:var(--mint)}
+.brand img{width:28px;height:28px;border-radius:8px;display:block}
 .nav-copy{font-size:12px;color:var(--muted)}
 .btn{
   display:inline-flex;align-items:center;justify-content:center;gap:8px;
@@ -168,7 +171,7 @@ pre{
 <div class="orb b"></div>
 <div class="wrap">
   <nav>
-    <div class="brand">PHANTOM <span>VPN</span></div>
+    <div class="brand"><img src="/brand/phantomvpn-icon.svg" alt="PHANTOMVPN logo">PHANTOM <span>VPN</span></div>
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
       <a class="btn" href="/routing">Routing</a>
       <a class="btn" href="/docs">Docs</a>

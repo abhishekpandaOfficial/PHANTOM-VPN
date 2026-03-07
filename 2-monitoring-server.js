@@ -9,6 +9,7 @@ const crypto = require('crypto');
 const fs = require('fs');
 const http = require('http');
 const https = require('https');
+const pathMod = require('path');
 const { exec, execSync } = require('child_process');
 
 // ---- Config from environment ----
@@ -41,6 +42,7 @@ const ADMIN_FILE = '/opt/phantom-vpn/admin.html';
 const PORTAL_FILE = '/opt/phantom-vpn/portal.html';
 const ROUTING_FILE = '/opt/phantom-vpn/routing.html';
 const DOCS_FILE = '/opt/phantom-vpn/docs.html';
+const BRAND_DIR = '/opt/phantom-vpn/brand';
 const USERS_DB_FILE = '/opt/phantom-vpn/users.json';
 const WG_CONF_FILE = '/etc/wireguard/wg0.conf';
 const WG_SERVER_PUBLIC_KEY_FILE = '/etc/wireguard/server_public.key';
@@ -121,6 +123,27 @@ function serveHtml(res, path, notFoundMsg) {
   }
   res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
   res.end(fs.readFileSync(path, 'utf8'));
+}
+
+function mimeTypeFromPath(filePath) {
+  const ext = pathMod.extname(filePath).toLowerCase();
+  if (ext === '.svg') return 'image/svg+xml';
+  if (ext === '.png') return 'image/png';
+  if (ext === '.ico') return 'image/x-icon';
+  return 'application/octet-stream';
+}
+
+function serveStaticFile(res, filePath) {
+  if (!fs.existsSync(filePath)) {
+    res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+    res.end('Not found');
+    return;
+  }
+  res.writeHead(200, {
+    'Content-Type': mimeTypeFromPath(filePath),
+    'Cache-Control': 'public, max-age=86400',
+  });
+  res.end(fs.readFileSync(filePath));
 }
 
 function escapeForDoubleQuotes(value) {
@@ -1097,6 +1120,22 @@ function handleRequest(req, res) {
 
   const requestUrl = new URL(req.url, 'http://localhost');
   const path = requestUrl.pathname;
+
+  if (path === '/favicon.ico') {
+    serveStaticFile(res, `${BRAND_DIR}/favicon-32.png`);
+    return;
+  }
+
+  if (path.startsWith('/brand/')) {
+    const name = path.slice('/brand/'.length);
+    if (!/^[a-zA-Z0-9._-]+$/.test(name)) {
+      res.writeHead(400, { 'Content-Type': 'text/plain; charset=utf-8' });
+      res.end('Invalid asset path');
+      return;
+    }
+    serveStaticFile(res, `${BRAND_DIR}/${name}`);
+    return;
+  }
 
   if (path === '/health') {
     json(res, 200, {

@@ -12,6 +12,7 @@
 | `7-user-dashboard.html` | End-user profile page with live access state, QR import, and payment actions |
 | `8-routing.html` | Public routing explanation page |
 | `9-docs.html` | First-time onboarding docs with dummy user walkthrough |
+| `brand/` | PHANTOMVPN logo and favicon assets |
 | `chrome-extension/` | Chrome browser extension folder |
 
 ## Quick Start
@@ -19,7 +20,7 @@
 ### 1. Deploy to DigitalOcean
 ```bash
 # Create a Ubuntu 22.04 droplet, SSH in as root, then:
-scp 1-deploy.sh 2-monitoring-server.js 3-dashboard.html 5-landing.html 6-admin.html 7-user-dashboard.html 8-routing.html 9-docs.html root@YOUR_DROPLET_IP:/root/
+scp -r 1-deploy.sh 2-monitoring-server.js 3-dashboard.html 5-landing.html 6-admin.html 7-user-dashboard.html 8-routing.html 9-docs.html brand root@YOUR_DROPLET_IP:/root/
 ssh root@YOUR_DROPLET_IP "bash /root/1-deploy.sh"
 ```
 

@@ -6,6 +6,8 @@
 <title>PHANTOM VPN Admin Dashboard</title>
 <meta name="description" content="Admin monitoring dashboard for PHANTOM VPN. Sign in with the admin email and current authenticator code to view live routing and security telemetry.">
 <link rel="canonical" href="https://phantom.origixcloud.com/dashboard">
+<link rel="icon" type="image/png" sizes="32x32" href="/brand/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/brand/favicon-16.png">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700&family=Syne:wght@400;700;800&family=Syne+Mono&display=swap" rel="stylesheet">
 <style>
 /* ─── DESIGN SYSTEM ─────────────────────────────────── */
@@ -68,12 +70,11 @@ header{
 .logo{display:flex;align-items:center;gap:12px}
 .logo-hex{
   width:36px;height:36px;
-  background:linear-gradient(135deg,var(--accent),var(--purple));
-  clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+  background:transparent;
   display:flex;align-items:center;justify-content:center;
-  font-size:16px;
   animation:hexPulse 3s ease-in-out infinite;
 }
+.logo-hex img{width:36px;height:36px;border-radius:10px;display:block}
 @keyframes hexPulse{
   0%,100%{box-shadow:0 0 10px rgba(0,229,255,.4)}
   50%{box-shadow:0 0 30px rgba(0,229,255,.8),0 0 60px rgba(0,229,255,.2)}
@@ -372,7 +373,7 @@ canvas#netChart{width:100%;height:100%}
 <div class="root">
   <header>
     <div class="logo">
-      <div class="logo-hex">🛡</div>
+      <div class="logo-hex"><img src="/brand/phantomvpn-icon.svg" alt="PHANTOMVPN logo"></div>
       <div>
         <div class="logo-text">PHANTOM VPN</div>
         <div class="logo-sub">REAL-TIME SECURITY DASHBOARD</div>

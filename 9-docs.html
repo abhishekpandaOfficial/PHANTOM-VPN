@@ -6,6 +6,8 @@
 <title>PHANTOM VPN Docs</title>
 <meta name="description" content="PHANTOM VPN first-time onboarding documentation with user steps, connection guidance, and a dummy account example.">
 <link rel="canonical" href="https://phantom.origixcloud.com/docs">
+<link rel="icon" type="image/png" sizes="32x32" href="/brand/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/brand/favicon-16.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800&family=JetBrains+Mono:wght@400;600&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
@@ -42,8 +44,9 @@ nav{
   display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;
   padding:14px 16px;
 }
-.brand{font-family:'Outfit',sans-serif;font-size:20px;font-weight:800}
+.brand{display:flex;align-items:center;gap:10px;font-family:'Outfit',sans-serif;font-size:20px;font-weight:800}
 .brand span{color:var(--mint)}
+.brand img{width:28px;height:28px;border-radius:8px;display:block}
 .nav-links{display:flex;gap:10px;flex-wrap:wrap}
 .btn{
   display:inline-flex;align-items:center;justify-content:center;padding:10px 14px;border-radius:999px;
@@ -110,7 +113,7 @@ code{
 <body>
 <div class="wrap">
   <nav>
-    <div class="brand">PHANTOM <span>VPN</span></div>
+    <div class="brand"><img src="/brand/phantomvpn-icon.svg" alt="PHANTOMVPN logo">PHANTOM <span>VPN</span></div>
     <div class="nav-links">
       <a class="btn" href="/vpn">VPN</a>
       <a class="btn" href="/routing">Routing</a>

@@ -313,6 +313,8 @@ cp /root/6-admin.html /opt/phantom-vpn/admin.html 2>/dev/null || true
 cp /root/7-user-dashboard.html /opt/phantom-vpn/portal.html 2>/dev/null || true
 cp /root/8-routing.html /opt/phantom-vpn/routing.html 2>/dev/null || true
 cp /root/9-docs.html /opt/phantom-vpn/docs.html 2>/dev/null || true
+mkdir -p /opt/phantom-vpn/brand
+cp /root/brand/* /opt/phantom-vpn/brand/ 2>/dev/null || true
 
 cat > /opt/phantom-vpn/package.json <<EOF
 {

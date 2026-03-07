@@ -6,6 +6,8 @@
 <title>PHANTOM VPN Profile</title>
 <meta name="description" content="View your PHANTOM VPN profile, monitor connection state, follow setup steps, and continue from trial to paid access.">
 <link rel="canonical" href="https://phantom.origixcloud.com/profile">
+<link rel="icon" type="image/png" sizes="32x32" href="/brand/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/brand/favicon-16.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -40,6 +42,8 @@ header{
 h1{font-family:'Outfit',sans-serif;font-size:40px}
 .sub{color:var(--muted);font-size:13px;line-height:1.7;max-width:64ch}
 .link{color:var(--cyan);text-decoration:none;font-size:12px}
+.title-row{display:flex;align-items:center;gap:12px}
+.title-row img{width:36px;height:36px;border-radius:10px;display:block}
 .grid{display:grid;grid-template-columns:1.15fr .85fr;gap:14px}
 .panel{
   background:linear-gradient(160deg,var(--panel),var(--panel2));
@@ -95,7 +99,7 @@ input{
 <div class="wrap">
   <header>
     <div>
-      <h1>Your PHANTOM Monitor</h1>
+      <div class="title-row"><img src="/brand/phantomvpn-icon.svg" alt="PHANTOMVPN logo"><h1>Your PHANTOM Monitor</h1></div>
       <p class="sub">Track remaining trial time, connection status, and payment state. Reconnecting does not reset the free quota: PHANTOM resumes from the time already consumed.</p>
     </div>
     <div style="display:flex;gap:12px;flex-wrap:wrap">
