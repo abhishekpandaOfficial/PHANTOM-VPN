@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PHANTOM VPN | Private VPN Access and First-Time Setup</title>
-<meta name="description" content="Learn how PHANTOM VPN works, create your account, import your WireGuard profile, and follow a clear first-time onboarding flow.">
+<title>PHANTOM VPN | Secure Tunnels, Real Visibility, Better VPN Workflow</title>
+<meta name="description" content="PHANTOM VPN gives dedicated secure tunnels, transparent trial tracking, and real onboarding workflow. Compare PHANTOM against free and paid VPN models.">
 <link rel="canonical" href="https://phantom.origixcloud.com/vpn">
 <link rel="icon" type="image/png" sizes="32x32" href="/brand/favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/brand/favicon-16.png">
@@ -13,138 +13,219 @@
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#081016;
-  --panel:#0f1d27;
-  --panel2:#13242f;
-  --line:#203846;
-  --text:#e6f3f8;
-  --muted:#8ba8b7;
-  --mint:#1dd4a7;
-  --cyan:#5dd8ff;
-  --gold:#ffd76c;
-  --orange:#ff8d57;
-  --red:#ff6e84;
+  --bg:#071018;
+  --bg-grad-a:rgba(88,216,255,.15);
+  --bg-grad-b:rgba(39,215,173,.14);
+  --text:#e8f6fc;
+  --muted:#8da9b8;
+  --panel:#0f1f2b;
+  --panel2:#132938;
+  --line:#24495c;
+  --mint:#24d8ac;
+  --cyan:#58d8ff;
+  --gold:#ffd96c;
+  --orange:#ff955d;
+  --danger:#ff7188;
+  --hero-shadow:0 28px 60px rgba(0,0,0,.28);
+}
+body[data-theme="light"]{
+  --bg:#edf7fc;
+  --bg-grad-a:rgba(87,163,232,.18);
+  --bg-grad-b:rgba(36,216,172,.16);
+  --text:#10202d;
+  --muted:#4f6a7a;
+  --panel:#ffffff;
+  --panel2:#f0f8fc;
+  --line:#c6dce8;
+  --mint:#0ca986;
+  --cyan:#0f88cf;
+  --gold:#c18e1f;
+  --orange:#dc6e3d;
+  --danger:#d94e68;
+  --hero-shadow:0 22px 46px rgba(18,55,79,.14);
 }
 *{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
 body{
   font-family:'Manrope',sans-serif;
   background:
-    radial-gradient(circle at 15% 10%, rgba(93,216,255,.14), transparent 28%),
-    radial-gradient(circle at 85% 15%, rgba(255,141,87,.14), transparent 24%),
-    linear-gradient(180deg, #071015 0%, #08141b 100%);
+    radial-gradient(circle at 12% 9%, var(--bg-grad-a), transparent 30%),
+    radial-gradient(circle at 88% 12%, var(--bg-grad-b), transparent 30%),
+    linear-gradient(180deg,var(--bg),color-mix(in srgb,var(--bg) 70%, #000 30%) 100%);
   color:var(--text);
   min-height:100vh;
   overflow-x:hidden;
+  transition:background .35s ease,color .25s ease;
 }
-.orb{
-  position:fixed;
-  border-radius:50%;
-  filter:blur(16px);
-  opacity:.5;
-  pointer-events:none;
-  animation:float 10s ease-in-out infinite;
+.noise{
+  position:fixed;inset:0;pointer-events:none;opacity:.35;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.08'/%3E%3C/svg%3E");
 }
-.orb.a{width:280px;height:280px;background:#18d1a533;top:-40px;left:-80px}
-.orb.b{width:340px;height:340px;background:#5dd8ff22;right:-120px;top:120px;animation-delay:-3s}
-@keyframes float{
-  50%{transform:translate(24px,18px) scale(1.04)}
-}
-.wrap{max-width:1180px;margin:0 auto;padding:28px 20px 80px;position:relative;z-index:1}
-nav{
+.wrap{max-width:1200px;margin:0 auto;padding:22px 20px 82px;position:relative;z-index:1}
+.topbar{
+  position:sticky;top:14px;z-index:80;
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:color-mix(in srgb,var(--panel) 82%, transparent);
+  backdrop-filter:blur(10px);
+  padding:12px 14px;
   display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;
-  padding:14px 16px;border:1px solid rgba(32,56,70,.9);border-radius:18px;
-  background:rgba(9,18,24,.72);backdrop-filter:blur(12px);
 }
-.brand{display:flex;align-items:center;gap:10px;font-family:'Outfit',sans-serif;font-size:20px;font-weight:800;letter-spacing:1px}
+.brand{display:flex;align-items:center;gap:10px;font-family:'Outfit',sans-serif;font-size:20px;font-weight:800;letter-spacing:.02em}
+.brand img{width:30px;height:30px;border-radius:9px}
 .brand span{color:var(--mint)}
-.brand img{width:28px;height:28px;border-radius:8px;display:block}
-.nav-copy{font-size:12px;color:var(--muted)}
-.btn{
+.menu{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.menu a,.menu button{
   display:inline-flex;align-items:center;justify-content:center;gap:8px;
-  padding:11px 16px;border-radius:999px;border:1px solid var(--line);
-  text-decoration:none;color:var(--text);cursor:pointer;background:transparent;
-  font-family:inherit;font-size:14px;transition:.18s ease;
+  border:1px solid var(--line);border-radius:999px;padding:9px 13px;
+  text-decoration:none;background:transparent;color:var(--text);cursor:pointer;
+  font-size:13px;font-family:inherit;
 }
-.btn:hover{transform:translateY(-1px)}
-.btn.main{background:linear-gradient(90deg,#1acfa2,#1796d6);border:none;color:#041217}
-.btn.alt{border-color:#2f5568;color:var(--cyan)}
-.hero{display:grid;grid-template-columns:1.05fr .95fr;gap:24px;align-items:center;padding:44px 0 26px}
+.menu a:hover,.menu button:hover{transform:translateY(-1px)}
+.menu .cta{background:linear-gradient(90deg,var(--mint),var(--cyan));border:none;color:#031218;font-weight:700}
+.hero{
+  margin-top:30px;
+  display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:stretch;
+}
+.hero-panel{
+  border:1px solid var(--line);
+  border-radius:24px;
+  padding:24px;
+  background:linear-gradient(160deg,var(--panel),var(--panel2));
+  box-shadow:var(--hero-shadow);
+}
 .kicker{
-  display:inline-flex;gap:8px;align-items:center;padding:8px 12px;border-radius:999px;
-  background:rgba(29,212,167,.08);border:1px solid rgba(29,212,167,.25);color:var(--mint);font-size:12px;font-weight:700;
+  display:inline-flex;align-items:center;gap:8px;
+  padding:8px 12px;border-radius:999px;
+  border:1px solid color-mix(in srgb,var(--mint) 45%, var(--line) 55%);
+  background:color-mix(in srgb,var(--mint) 10%, transparent);
+  color:var(--mint);font-size:12px;font-weight:700;
 }
-.hero h1{
+h1{
   font-family:'Outfit',sans-serif;
-  font-size:clamp(40px,6vw,76px);
-  line-height:.98;
-  margin:16px 0 12px;
+  font-size:clamp(38px,6.2vw,76px);
+  line-height:.95;
+  margin:16px 0 10px;
   max-width:12ch;
 }
-.hero p{font-size:16px;line-height:1.8;color:var(--muted);max-width:58ch}
-.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}
-.hero-card,.panel{
-  background:linear-gradient(160deg,rgba(15,29,39,.95),rgba(19,36,47,.92));
-  border:1px solid rgba(32,56,70,.95);
-  border-radius:24px;
-  padding:20px;
-  box-shadow:0 26px 56px rgba(0,0,0,.22);
+.hero-panel p{color:var(--muted);font-size:15px;line-height:1.78}
+.hero-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:11px 15px;border-radius:999px;border:1px solid var(--line);
+  text-decoration:none;color:var(--text);cursor:pointer;background:transparent;font-size:14px;
 }
-.hero-card{position:relative;overflow:hidden}
-.hero-card::before{
-  content:"";
-  position:absolute;inset:auto -40px -60px auto;width:200px;height:200px;border-radius:50%;
-  background:radial-gradient(circle, rgba(29,212,167,.18), transparent 68%);
-}
-.metrics{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}
+.btn.main{background:linear-gradient(90deg,var(--mint),var(--cyan));border:none;color:#04131a;font-weight:700}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:18px}
 .tile{
-  padding:14px;border-radius:16px;border:1px solid rgba(48,84,102,.8);
-  background:rgba(5,12,16,.45);
+  border:1px solid var(--line);border-radius:14px;padding:12px;
+  background:color-mix(in srgb,var(--panel2) 76%, transparent);
 }
 .tile strong{display:block;font-family:'Outfit',sans-serif;font-size:28px}
 .tile span{font-size:12px;color:var(--muted)}
-.network-demo{
-  margin-top:20px;padding:16px;border-radius:18px;background:#071118;border:1px solid rgba(48,84,102,.85);
+.hero-visual{
+  position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;
+  min-height:520px;
 }
-.demo-track{height:10px;border-radius:999px;background:#10212b;position:relative;overflow:hidden;margin:10px 0}
-.demo-fill{
-  position:absolute;inset:0 auto 0 0;width:38%;
-  background:linear-gradient(90deg,var(--mint),var(--cyan));
-  animation:slide 3.2s ease-in-out infinite;
+.tunnel-wrap{
+  width:min(440px,86%);height:420px;position:relative;perspective:1000px;
 }
-.demo-fill.b{width:58%;animation-duration:4.1s;background:linear-gradient(90deg,var(--gold),var(--orange))}
-@keyframes slide{
-  50%{width:84%}
+.tunnel-core{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  transform-style:preserve-3d;
+  animation:orbit 13s linear infinite;
 }
-.section{margin-top:32px}
-.section-head{display:flex;justify-content:space-between;gap:12px;align-items:end;flex-wrap:wrap;margin-bottom:14px}
+.ring{
+  position:absolute;border-radius:28px;
+  border:1px solid color-mix(in srgb,var(--cyan) 45%, var(--line) 55%);
+  box-shadow:0 0 24px color-mix(in srgb,var(--cyan) 26%, transparent);
+}
+.ring.r1{width:360px;height:300px;transform:translateZ(0) rotateX(63deg)}
+.ring.r2{width:300px;height:248px;transform:translateZ(56px) rotateX(63deg)}
+.ring.r3{width:240px;height:198px;transform:translateZ(104px) rotateX(63deg)}
+.ring.r4{width:178px;height:146px;transform:translateZ(150px) rotateX(63deg)}
+.secure-node{
+  width:124px;height:124px;border-radius:30px;
+  border:1px solid color-mix(in srgb,var(--mint) 48%, var(--line) 52%);
+  background:linear-gradient(160deg,color-mix(in srgb,var(--mint) 18%, var(--panel)),var(--panel));
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 20px 40px rgba(0,0,0,.24),0 0 26px color-mix(in srgb,var(--mint) 36%, transparent);
+  transform:translateZ(194px);
+}
+.secure-node img{width:70px;height:70px;border-radius:18px}
+.stream{
+  position:absolute;height:2px;left:56px;right:56px;
+  background:linear-gradient(90deg,transparent,var(--mint),var(--cyan),transparent);
+  filter:drop-shadow(0 0 10px color-mix(in srgb,var(--cyan) 56%, transparent));
+  animation:flow 2.4s linear infinite;
+}
+.stream.s1{top:138px}
+.stream.s2{top:206px;animation-delay:.5s}
+.stream.s3{top:274px;animation-delay:1s}
+.caption{
+  position:absolute;left:20px;right:20px;bottom:18px;
+  border:1px solid var(--line);border-radius:14px;padding:10px 12px;
+  background:color-mix(in srgb,var(--panel2) 84%, transparent);
+  color:var(--muted);font-size:12px;line-height:1.6;
+}
+@keyframes orbit{to{transform:rotateY(360deg)}}
+@keyframes flow{
+  0%{opacity:0;transform:translateX(-30px)}
+  30%{opacity:1}
+  100%{opacity:0;transform:translateX(30px)}
+}
+.section{margin-top:34px}
+.section-head{display:flex;justify-content:space-between;gap:14px;align-items:end;flex-wrap:wrap;margin-bottom:14px}
 .section-head h2{font-family:'Outfit',sans-serif;font-size:34px}
-.section-head p{max-width:60ch;color:var(--muted);line-height:1.8}
+.section-head p{max-width:62ch;color:var(--muted);line-height:1.8}
+.panel{
+  border:1px solid var(--line);border-radius:22px;padding:20px;
+  background:linear-gradient(160deg,var(--panel),var(--panel2));
+  box-shadow:0 16px 34px rgba(0,0,0,.16);
+}
 .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-.feature h3,.flow h3,.panel h3{font-family:'Outfit',sans-serif;font-size:22px;margin-bottom:10px}
-.feature p,.flow p,.panel p{color:var(--muted);line-height:1.75;font-size:14px}
-.flow{position:relative;overflow:hidden}
-.flow::after{
-  content:"";
-  position:absolute;right:-20px;top:-20px;width:120px;height:120px;border-radius:50%;
-  border:1px solid rgba(93,216,255,.18);
+.workflow{
+  position:relative;overflow:hidden;
 }
-.comparison{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.list{display:grid;gap:10px;margin-top:12px}
-.row{
-  display:grid;grid-template-columns:1fr 1fr;gap:14px;
+.workflow::after{
+  content:"";position:absolute;right:-28px;top:-28px;width:130px;height:130px;border-radius:50%;
+  border:1px solid color-mix(in srgb,var(--cyan) 46%, var(--line) 54%);
 }
+.workflow h3,.cmp h3,.panel h3{font-family:'Outfit',sans-serif;font-size:22px;margin-bottom:9px}
+.workflow p,.cmp p,.panel p{color:var(--muted);font-size:14px;line-height:1.8}
+.workflow .tag{
+  display:inline-block;margin-top:12px;padding:6px 10px;font-size:11px;border-radius:999px;
+  border:1px solid var(--line);color:var(--cyan);
+}
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.list{display:grid;gap:10px;margin-top:10px}
+.vpn-matrix{
+  margin-top:14px;border:1px solid var(--line);border-radius:16px;overflow:hidden;
+}
+.vpn-row{
+  display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;
+  border-top:1px solid var(--line);
+}
+.vpn-row:first-child{border-top:none;background:color-mix(in srgb,var(--panel2) 84%, transparent);font-weight:700}
+.vpn-row div{padding:12px;font-size:13px}
+.ok{color:var(--mint);font-weight:700}
+.warn{color:var(--gold);font-weight:700}
+.bad{color:var(--danger);font-weight:700}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 label{display:block;font-size:12px;color:var(--muted);margin:10px 0 6px}
 input,textarea{
-  width:100%;padding:12px 14px;border-radius:14px;border:1px solid #244151;background:#071117;color:var(--text);
-  font-family:inherit;font-size:14px;outline:none;
+  width:100%;padding:12px 14px;border-radius:14px;
+  border:1px solid var(--line);background:color-mix(in srgb,var(--panel2) 84%, transparent);
+  color:var(--text);font-family:inherit;font-size:14px;outline:none;
 }
 textarea{min-height:88px;resize:vertical}
 .status{min-height:20px;margin-top:12px;font-size:13px}
 .status.ok{color:var(--mint)}
-.status.err{color:var(--red)}
+.status.err{color:var(--danger)}
 pre{
-  margin-top:12px;padding:14px;border-radius:18px;background:#061018;border:1px solid #244151;
-  overflow:auto;max-height:280px;white-space:pre-wrap;word-break:break-word;font-size:12px;line-height:1.7;
+  margin-top:12px;padding:14px;border-radius:16px;border:1px solid var(--line);
+  background:color-mix(in srgb,var(--panel2) 88%, transparent);
+  overflow:auto;max-height:280px;white-space:pre-wrap;word-break:break-word;font-size:12px;line-height:1.72;
 }
 .success-card{display:none}
 .success-card.show{display:block}
@@ -154,150 +235,150 @@ pre{
 }
 .step-list{display:grid;gap:10px;margin-top:12px}
 .step{
-  padding:12px 14px;border:1px solid rgba(48,84,102,.8);border-radius:16px;background:rgba(7,17,23,.48)
+  padding:12px 14px;border:1px solid var(--line);border-radius:16px;
+  background:color-mix(in srgb,var(--panel2) 80%, transparent)
 }
 .step strong{display:block;font-family:'Outfit',sans-serif;font-size:16px;margin-bottom:4px}
 .portal-link{word-break:break-all;color:var(--cyan)}
 .apps{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-.chip{padding:8px 10px;border-radius:999px;border:1px solid rgba(48,84,102,.8);font-size:12px;color:var(--muted)}
-@media(max-width:980px){
-  .hero,.grid3,.comparison,.row,.success-grid{grid-template-columns:1fr}
+.chip{padding:8px 10px;border-radius:999px;border:1px solid var(--line);font-size:12px;color:var(--muted)}
+@media(max-width:1020px){
+  .hero,.grid3,.compare-grid,.form-row,.success-grid{grid-template-columns:1fr}
   .hero h1{max-width:none}
+  .hero-visual{min-height:400px}
+}
+@media(max-width:720px){
+  .vpn-row{grid-template-columns:1.4fr 1fr 1fr 1fr}
+  .vpn-row div{padding:10px 8px;font-size:12px}
 }
 </style>
 </head>
-<body>
-<div class="orb a"></div>
-<div class="orb b"></div>
+<body data-theme="dark">
+<div class="noise"></div>
 <div class="wrap">
-  <nav>
-    <div class="brand"><img src="/brand/phantomvpn-icon.svg" alt="PHANTOMVPN logo">PHANTOM <span>VPN</span></div>
-    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-      <a class="btn" href="/routing">Routing</a>
-      <a class="btn" href="/docs">Docs</a>
-      <div class="nav-copy">Private onboarding • dedicated profiles • no shared accounts</div>
+  <nav class="topbar">
+    <div class="brand">
+      <img src="/brand/phantomvpn-icon.svg" alt="PHANTOMVPN logo">
+      PHANTOM <span>VPN</span>
+    </div>
+    <div class="menu">
+      <a href="#workflow">Workflow</a>
+      <a href="#compare">Comparison</a>
+      <a href="#trial">Start</a>
+      <a href="/routing">Routing</a>
+      <a href="/docs">Docs</a>
+      <button id="themeToggle" type="button">Light Theme</button>
+      <a class="cta" href="#trial">Create Tunnel</a>
     </div>
   </nav>
 
   <section class="hero">
-    <div>
-      <div class="kicker">Private routing with measurable control</div>
-      <h1>PHANTOM makes VPN trust visible.</h1>
+    <article class="hero-panel">
+      <div class="kicker">Secure tunnel workflow with real visibility</div>
+      <h1>How PHANTOM becomes your best VPN choice</h1>
       <p>
-        Most VPNs sell a black box. PHANTOM gives each user a dedicated WireGuard profile, a personal monitor portal,
-        a one-hour free trial budget that persists across reconnects, and a clean upgrade path to paid access.
+        PHANTOM gives each user a dedicated secure tunnel, measurable trial accounting, and profile-level continuity.
+        You can see how usage, status, and upgrade state behave instead of guessing behind a black-box VPN service.
       </p>
       <div class="hero-actions">
         <a class="btn main" href="#trial">Start Free Trial</a>
-        <a class="btn alt" href="/docs">Read Setup Guide</a>
+        <a class="btn" href="#compare">See VPN Comparison</a>
       </div>
-    </div>
+      <div class="stats">
+        <div class="tile"><strong>1:1</strong><span>Dedicated profile per user</span></div>
+        <div class="tile"><strong>Live</strong><span>Connection + quota visibility</span></div>
+        <div class="tile"><strong>No Reset</strong><span>Reconnect does not fake free time</span></div>
+        <div class="tile"><strong>Fast</strong><span>WireGuard QR import workflow</span></div>
+      </div>
+    </article>
 
-    <div class="hero-card">
-      <h3 style="font-family:'Outfit',sans-serif;font-size:28px">Why PHANTOM feels different</h3>
-      <div class="metrics">
-        <div class="tile"><strong>1h</strong><span>Free usage quota per 15-day cycle</span></div>
-        <div class="tile"><strong>1:1</strong><span>Dedicated config per user</span></div>
-        <div class="tile"><strong>Live</strong><span>Personal monitor portal</span></div>
-        <div class="tile"><strong>WG</strong><span>Fast WireGuard import via QR</span></div>
-      </div>
-      <div class="network-demo">
-        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted)">
-          <span>PHANTOM TUNNEL</span>
-          <span>Encrypted</span>
-        </div>
-        <div class="demo-track"><div class="demo-fill"></div></div>
-        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted)">
-          <span>DNS HARDENING</span>
-          <span>Shielded</span>
-        </div>
-        <div class="demo-track"><div class="demo-fill b"></div></div>
-        <div style="margin-top:12px;color:var(--muted);font-size:13px;line-height:1.7">
-          PHANTOM provisions, monitors, and limits the trial quota at the peer level. Disconnecting does not reset your free time.
+    <article class="hero-panel hero-visual" aria-label="3D secure tunnel visual">
+      <div class="tunnel-wrap">
+        <div class="stream s1"></div>
+        <div class="stream s2"></div>
+        <div class="stream s3"></div>
+        <div class="tunnel-core">
+          <div class="ring r1"></div>
+          <div class="ring r2"></div>
+          <div class="ring r3"></div>
+          <div class="ring r4"></div>
+          <div class="secure-node">
+            <img src="/brand/phantomvpn-icon.svg" alt="Secure tunnel node">
+          </div>
         </div>
       </div>
-    </div>
+      <div class="caption">
+        Your traffic path: Device -> Dedicated PHANTOM WireGuard profile -> Policy + DNS hardening -> Controlled egress.
+      </div>
+    </article>
   </section>
 
-  <section class="section" id="how">
+  <section class="section" id="workflow">
     <div class="section-head">
-      <h2>How PHANTOM works</h2>
-      <p>Each new user gets a personal config, a QR import path for mobile, and a monitor page showing their remaining free time and current connection state.</p>
+      <h2>Secure Tunnel Workflow</h2>
+      <p>PHANTOM onboarding follows an auditable sequence from signup to active tunnel and upgrade, without replacing user profiles on payment.</p>
     </div>
     <div class="grid3">
-      <article class="panel flow">
-        <h3>Create your profile</h3>
-        <p>Create a personal profile with your own email. No shared credentials, no shared WireGuard key.</p>
+      <article class="panel workflow">
+        <h3>Create Identity</h3>
+        <p>User creates a dedicated PHANTOM profile with unique WireGuard keys. No shared account pools and no hidden account recycling.</p>
+        <div class="tag">Identity-bound tunnel</div>
       </article>
-      <article class="panel flow">
-        <h3>Import in WireGuard</h3>
-        <p>Scan the generated QR code directly inside the WireGuard app on iPhone or Android, or download the config for desktop.</p>
+      <article class="panel workflow">
+        <h3>Import Secure Tunnel</h3>
+        <p>User scans QR in WireGuard and activates the encrypted tunnel. PHANTOM tracks real connected time instead of session guesswork.</p>
+        <div class="tag">Measured connection state</div>
       </article>
-      <article class="panel flow">
-        <h3>Track your access</h3>
-        <p>The personal monitor portal tracks whether you are connected, how much free time remains, and when your next free cycle becomes available.</p>
+      <article class="panel workflow">
+        <h3>Continue Same Profile</h3>
+        <p>On upgrade, PHANTOM reactivates the same profile. Users keep working config and maintain continuity across trial and paid stages.</p>
+        <div class="tag">No config replacement churn</div>
       </article>
     </div>
   </section>
 
-  <section class="section">
+  <section class="section" id="compare">
     <div class="section-head">
-      <h2>First-time onboarding</h2>
-      <p>This is the real user flow in PHANTOM today, including what TOTP is and is not used for.</p>
+      <h2>Free vs Paid VPN Comparison</h2>
+      <p>Most free and generic paid VPNs optimize for volume. PHANTOM optimizes for accountable user-level tunnel behavior and transparent workflow.</p>
     </div>
-    <div class="comparison">
-      <article class="panel feature">
-        <h3>What users do</h3>
-        <div class="list">
-          <p>Open the PHANTOM VPN page, review the service, and create a personal profile with name and email.</p>
-          <p>Scan the WireGuard QR code or download the generated `.conf` file.</p>
-          <p>Open the personal profile page to check connection state, remaining trial time, and payment status.</p>
+    <div class="compare-grid">
+      <article class="panel cmp">
+        <h3>Model Comparison</h3>
+        <div class="vpn-matrix">
+          <div class="vpn-row">
+            <div>Capability</div><div>Typical Free VPN</div><div>Typical Paid VPN</div><div>PHANTOM VPN</div>
+          </div>
+          <div class="vpn-row">
+            <div>Dedicated profile per user</div><div class="bad">Rare</div><div class="warn">Mixed</div><div class="ok">Yes</div>
+          </div>
+          <div class="vpn-row">
+            <div>Visible trial accounting</div><div class="bad">Low</div><div class="warn">Partial</div><div class="ok">Clear</div>
+          </div>
+          <div class="vpn-row">
+            <div>Same profile after payment</div><div class="bad">No</div><div class="warn">Often reset</div><div class="ok">Yes</div>
+          </div>
+          <div class="vpn-row">
+            <div>Admin-auth separation (TOTP)</div><div class="bad">Weak</div><div class="warn">Varies</div><div class="ok">Strict</div>
+          </div>
         </div>
       </article>
-      <article class="panel feature">
-        <h3>What TOTP is for</h3>
+      <article class="panel cmp">
+        <h3>Why this matters</h3>
         <div class="list">
-          <p>TOTP is only for PHANTOM admin access on the admin and monitoring dashboards.</p>
-          <p>End users do not scan a TOTP code to use the VPN. They scan a WireGuard configuration QR.</p>
-          <p>The full walkthrough and a dummy user example are available on the Docs page.</p>
-        </div>
-        <div class="hero-actions" style="margin-top:16px">
-          <a class="btn main" href="/docs">Open Docs</a>
-          <a class="btn alt" href="/routing">See Routing</a>
-        </div>
-      </article>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="section-head">
-      <h2>PHANTOM vs generic VPNs</h2>
-      <p>PHANTOM is built around user-level accountability instead of anonymous shared access.</p>
-    </div>
-    <div class="comparison">
-      <article class="panel feature">
-        <h3>Generic VPNs</h3>
-        <div class="list">
-          <p>Shared login details and opaque session limits.</p>
-          <p>No idea how much trial time is left or whether reconnecting resets anything.</p>
-          <p>Payment often happens before the user even understands the product.</p>
-        </div>
-      </article>
-      <article class="panel feature">
-        <h3>PHANTOM</h3>
-        <div class="list">
-          <p>Every user gets a dedicated WireGuard profile and personal portal.</p>
-          <p>Usage time survives reconnects, so the remaining free budget is honest.</p>
-          <p>Users can start free, understand the workflow, then upgrade with Razorpay.</p>
+          <p>Free VPN users often trade visibility and policy guarantees for basic connectivity.</p>
+          <p>Paid VPN users still may not know if the tunnel lifecycle is profile-stable or shared.</p>
+          <p>PHANTOM gives explicit workflow controls: dedicated profile, observable state, and continuity through upgrade.</p>
+          <p>This reduces support friction and improves trust, especially for first-time VPN users.</p>
         </div>
       </article>
     </div>
   </section>
 
-  <section class="section row" id="trial">
+  <section class="section form-row" id="trial">
     <article class="panel">
       <h3>Start your PHANTOM trial</h3>
-      <p>Your free quota is one hour of connection time during a 15-day cycle. If you disconnect and reconnect, the timer continues from where you left off.</p>
+      <p>Your free quota is one hour of connection time during a 15-day cycle. Reconnecting continues from consumed time, no fake reset behavior.</p>
       <label for="name">Your Name</label>
       <input id="name" placeholder="alex" />
       <label for="email">Email</label>
@@ -314,15 +395,15 @@ pre{
 
     <article class="panel success-card" id="successCard">
       <h3>Your PHANTOM setup is ready</h3>
-      <p>Scan the QR code below directly in the WireGuard app. This QR contains your VPN configuration. Authenticator apps are only for admin sign-in, not for end-user VPN access.</p>
+      <p>Scan the QR directly in WireGuard. This is a VPN config QR, not an authenticator QR. TOTP remains admin-only.</p>
       <div class="success-grid">
         <div class="qr-box" id="qrBox"><span style="color:#111">QR loading…</span></div>
         <div>
           <div class="step-list">
-            <div class="step"><strong>Create</strong>Your personal PHANTOM account is now ready and linked to the email you submitted.</div>
-            <div class="step"><strong>Import</strong>Open the WireGuard app, choose <em>Scan from QR code</em>, and scan the PHANTOM QR.</div>
-            <div class="step"><strong>Connect</strong>Turn the tunnel on, then open your personal profile page below to confirm the VPN is connected and to watch remaining trial time.</div>
-            <div class="step"><strong>Continue</strong>If the free hour ends, use Razorpay or submit a payment reference from the profile page to keep the same VPN profile active.</div>
+            <div class="step"><strong>Create</strong>Your personal PHANTOM account is now linked to the email you submitted.</div>
+            <div class="step"><strong>Import</strong>Open WireGuard, choose <em>Scan from QR code</em>, and scan the PHANTOM QR.</div>
+            <div class="step"><strong>Connect</strong>Turn the tunnel on, then open your personal profile page to verify live status and remaining trial time.</div>
+            <div class="step"><strong>Continue</strong>When trial ends, pay from your profile page and continue with the same VPN profile.</div>
           </div>
           <div class="apps">
             <span class="chip">WireGuard iOS</span>
@@ -390,7 +471,7 @@ async function createTrial() {
       note: document.getElementById('note').value.trim(),
     };
     if (!body.name || !body.email) throw new Error('Name and email are required');
-    setStatus('trialStatus', 'Creating your PHANTOM profile…', false);
+    setStatus('trialStatus', 'Creating your PHANTOM profile...', false);
     const d = await publicApi('/api/public/trial', { method: 'POST', body });
     lastConfig = d.config || '';
     lastFilename = safeFileName(d.user?.name || body.name) + '.conf';
@@ -415,14 +496,37 @@ async function createTrial() {
       box.innerHTML = '<span style="color:#111">Reload once if the QR does not appear.</span>';
     }
 
-    setStatus('trialStatus', 'Profile created. Next: scan the QR in WireGuard, then open your PHANTOM profile page.', false);
+    setStatus('trialStatus', 'Profile created. Scan QR in WireGuard, then open your PHANTOM profile page.', false);
   } catch (e) {
     setStatus('trialStatus', e.message, true);
   }
 }
 
+function applyTheme(theme) {
+  document.body.setAttribute('data-theme', theme);
+  const btn = document.getElementById('themeToggle');
+  btn.textContent = theme === 'dark' ? 'Light Theme' : 'Dark Theme';
+}
+
+function initTheme() {
+  const saved = localStorage.getItem('phantom_theme');
+  if (saved === 'dark' || saved === 'light') {
+    applyTheme(saved);
+    return;
+  }
+  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  applyTheme(prefersDark ? 'dark' : 'light');
+}
+
+document.getElementById('themeToggle').addEventListener('click', () => {
+  const current = document.body.getAttribute('data-theme') || 'dark';
+  const next = current === 'dark' ? 'light' : 'dark';
+  localStorage.setItem('phantom_theme', next);
+  applyTheme(next);
+});
 document.getElementById('trialBtn').addEventListener('click', createTrial);
 document.getElementById('downloadBtn').addEventListener('click', downloadConfig);
+initTheme();
 </script>
 </body>
 </html>
