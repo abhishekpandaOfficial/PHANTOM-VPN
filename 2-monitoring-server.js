@@ -736,7 +736,8 @@ function apiRequestJson(hostname, path, method, body, headers = {}) {
         let parsed = {};
         try { parsed = raw ? JSON.parse(raw) : {}; } catch (e) {}
         if (res.statusCode < 200 || res.statusCode >= 300) {
-          reject(new Error(parsed.error?.description || parsed.error || `HTTP ${res.statusCode}`));
+          const errDescription = parsed && parsed.error && parsed.error.description;
+          reject(new Error(errDescription || parsed.error || `HTTP ${res.statusCode}`));
           return;
         }
         resolve(parsed);
