@@ -1,0 +1,58 @@
+{
+  "manifest_version": 3,
+  "name": "PHANTOM VPN",
+  "version": "2.0.0",
+  "description": "Real-time VPN status, ad blocking, attack monitoring & IP rotation — PHANTOM VPN Chrome Extension",
+  "permissions": [
+    "storage",
+    "tabs",
+    "activeTab",
+    "webRequest",
+    "declarativeNetRequest",
+    "notifications",
+    "alarms",
+    "scripting"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16":  "icons/icon16.png",
+      "48":  "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_start",
+      "all_frames": false
+    }
+  ],
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "block_ads",
+        "enabled": true,
+        "path": "rules/block_ads.json"
+      },
+      {
+        "id": "block_trackers",
+        "enabled": true,
+        "path": "rules/block_trackers.json"
+      }
+    ]
+  },
+  "icons": {
+    "16":  "icons/icon16.png",
+    "48":  "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}

@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<title>PHANTOM VPN</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#03070f;--card:#0a1828;--border:#0e2540;
+  --accent:#00e5ff;--green:#00ff9d;--red:#ff2d6b;
+  --purple:#b47fff;--yellow:#ffd166;--orange:#ff7c38;
+  --text:#d0e8f8;--muted:#3a6080;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  width:360px;background:var(--bg);color:var(--text);
+  font-family:'JetBrains Mono',monospace;font-size:12px;
+  min-height:520px;overflow-x:hidden;
+}
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M20 2L38 12L38 32L20 42L2 32L2 12Z' fill='none' stroke='rgba(0,229,255,0.03)' stroke-width='1'/%3E%3C/svg%3E");
+  background-size:40px 40px;pointer-events:none;
+}
+.wrap{position:relative;z-index:1;padding:0 0 8px}
+
+/* HEADER */
+.hdr{
+  background:linear-gradient(135deg,rgba(0,229,255,.06),rgba(180,127,255,.04));
+  border-bottom:1px solid var(--border);
+  padding:14px 16px 12px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.logo{display:flex;align-items:center;gap:10px}
+.hex{
+  width:32px;height:32px;
+  background:linear-gradient(135deg,var(--accent),var(--purple));
+  clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+  display:flex;align-items:center;justify-content:center;font-size:14px;
+  animation:hpulse 3s ease-in-out infinite;
+}
+@keyframes hpulse{50%{box-shadow:0 0 20px rgba(0,229,255,.7)}}
+.brand{font-family:'Syne',sans-serif;font-size:15px;font-weight:800;
+  background:linear-gradient(90deg,var(--accent),var(--purple));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  letter-spacing:2px;
+}
+.version{font-size:9px;color:var(--muted);letter-spacing:1px;margin-top:1px}
+.status-dot{
+  display:flex;align-items:center;gap:6px;
+  font-size:10px;font-family:'Syne',sans-serif;font-weight:700;letter-spacing:1px;
+  padding:4px 10px;border-radius:2px;
+}
+.status-dot.on{color:var(--green);background:rgba(0,255,157,.08);border:1px solid rgba(0,255,157,.3)}
+.status-dot.off{color:var(--red);background:rgba(255,45,107,.08);border:1px solid rgba(255,45,107,.3)}
+.status-dot.conn{color:var(--yellow);animation:blink .8s infinite}
+@keyframes blink{50%{opacity:.4}}
+.dot-circle{width:6px;height:6px;border-radius:50%;background:currentColor}
+.dot-circle.pulse{animation:dpulse 1.4s infinite}
+@keyframes dpulse{50%{transform:scale(1.5)}}
+
+/* TABS */
+.tabs{display:flex;border-bottom:1px solid var(--border)}
+.tab{
+  flex:1;padding:8px;text-align:center;cursor:pointer;
+  font-size:9px;color:var(--muted);letter-spacing:1.5px;
+  font-family:'Syne',sans-serif;font-weight:700;transition:all .2s;
+}
+.tab:hover{color:var(--text);background:rgba(255,255,255,.02)}
+.tab.active{color:var(--accent);border-bottom:2px solid var(--accent)}
+
+/* PANELS */
+.panel{display:none;padding:14px 16px}
+.panel.active{display:block}
+
+/* IP BIG */
+.ip-hero{
+  text-align:center;padding:14px;margin-bottom:12px;
+  background:rgba(0,229,255,.04);border:1px solid rgba(0,229,255,.1);
+}
+.ip-val{
+  font-family:'Syne',sans-serif;font-size:20px;font-weight:800;
+  color:var(--green);letter-spacing:2px;
+  text-shadow:0 0 15px rgba(0,255,157,.5);
+}
+.ip-sub{font-size:9px;color:var(--muted);margin-top:4px;letter-spacing:1px}
+
+/* STATS GRID */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.stat-box{background:var(--card);border:1px solid var(--border);padding:10px;text-align:center}
+.stat-num{font-family:'Syne',sans-serif;font-size:17px;font-weight:800}
+.stat-lbl{font-size:8px;color:var(--muted);margin-top:3px;letter-spacing:1.5px}
+
+/* TOGGLE ROWS */
+.toggles{display:flex;flex-direction:column;gap:0}
+.trow{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 0;border-bottom:1px solid rgba(14,37,64,.6);
+}
+.trow-label{font-size:10px;color:var(--text)}
+.trow-sub{font-size:9px;color:var(--muted);margin-top:1px}
+.tog{
+  width:36px;height:18px;background:rgba(14,37,64,.8);
+  border:1px solid var(--border);border-radius:9px;
+  cursor:pointer;position:relative;transition:all .3s;flex-shrink:0;
+}
+.tog.on{background:rgba(0,255,157,.15);border-color:var(--green)}
+.tog::after{
+  content:'';position:absolute;top:2px;left:2px;
+  width:12px;height:12px;border-radius:50%;
+  background:var(--muted);transition:all .3s;
+}
+.tog.on::after{left:20px;background:var(--green);box-shadow:0 0 5px rgba(0,255,157,.6)}
+
+/* BUTTONS */
+.btn{
+  width:100%;padding:8px;border:1px solid;background:transparent;
+  cursor:pointer;font-family:'JetBrains Mono';font-size:10px;
+  letter-spacing:1.5px;font-weight:700;transition:all .2s;
+  margin-bottom:6px;text-transform:uppercase;
+  clip-path:polygon(0 0,calc(100% - 6px) 0,100% 6px,100% 100%,6px 100%,0 calc(100% - 6px));
+}
+.btn-c{border-color:var(--accent);color:var(--accent)}
+.btn-c:hover{background:rgba(0,229,255,.1)}
+.btn-g{border-color:var(--green);color:var(--green)}
+.btn-g:hover{background:rgba(0,255,157,.1)}
+.btn-r{border-color:var(--red);color:var(--red)}
+.btn-r:hover{background:rgba(255,45,107,.1)}
+.btn-y{border-color:var(--yellow);color:var(--yellow)}
+.btn-y:hover{background:rgba(255,209,102,.1)}
+.btns-row{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.btns-row .btn{margin:0}
+
+/* THREAT LIST */
+.threat-list{max-height:200px;overflow-y:auto;margin-bottom:8px}
+.threat-list::-webkit-scrollbar{width:2px}
+.threat-list::-webkit-scrollbar-thumb{background:var(--border)}
+.ti{
+  display:flex;justify-content:space-between;align-items:flex-start;
+  padding:6px 0;border-bottom:1px solid rgba(14,37,64,.5);
+}
+.ti-l{display:flex;flex-direction:column;gap:2px}
+.ti-ip{font-size:10px;color:var(--text)}
+.ti-msg{font-size:9px;color:var(--muted)}
+.badge{
+  padding:1px 5px;border-radius:1px;font-size:8px;
+  font-family:'Syne',sans-serif;font-weight:700;letter-spacing:.5px;white-space:nowrap;
+}
+.badge-hi{background:rgba(255,45,107,.15);border:1px solid rgba(255,45,107,.4);color:var(--red)}
+.badge-md{background:rgba(255,209,102,.1);border:1px solid rgba(255,209,102,.3);color:var(--yellow)}
+.badge-lo{background:rgba(0,229,255,.08);border:1px solid rgba(0,229,255,.2);color:var(--accent)}
+
+/* CONFIG INPUTS */
+.cfg-group{margin-bottom:10px}
+.cfg-label{font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:4px;display:block}
+.cfg-input{
+  width:100%;background:#020810;border:1px solid var(--border);
+  color:var(--text);padding:7px 10px;font-family:'JetBrains Mono';font-size:11px;
+  outline:none;transition:border-color .2s;
+}
+.cfg-input:focus{border-color:var(--accent)}
+
+/* ATTACKS PANEL */
+.attack-banner{
+  background:rgba(255,45,107,.06);border:1px solid rgba(255,45,107,.2);
+  padding:8px 10px;margin-bottom:10px;
+  display:flex;align-items:center;gap:8px;
+}
+.attack-count{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--red)}
+.attack-desc{font-size:9px;color:var(--muted);line-height:1.6}
+
+/* STATUS BAR */
+.sbar{
+  background:var(--card);border-top:1px solid var(--border);
+  padding:7px 16px;display:flex;justify-content:space-between;
+  font-size:9px;color:var(--muted);
+}
+.sbar-val{color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <!-- Header -->
+  <div class="hdr">
+    <div class="logo">
+      <div class="hex">🛡</div>
+      <div>
+        <div class="brand">PHANTOM</div>
+        <div class="version">VPN v2.0</div>
+      </div>
+    </div>
+    <div id="conn-status" class="status-dot off">
+      <div class="dot-circle"></div>
+      <span>OFFLINE</span>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab(event, 'status')">STATUS</div>
+    <div class="tab" onclick="switchTab(event, 'controls')">CONTROLS</div>
+    <div class="tab" onclick="switchTab(event, 'threats')">THREATS</div>
+    <div class="tab" onclick="switchTab(event, 'config')">CONFIG</div>
+  </div>
+
+  <!-- STATUS PANEL -->
+  <div class="panel active" id="panel-status">
+    <div class="ip-hero">
+      <div class="ip-val" id="ip-display">Not Connected</div>
+      <div class="ip-sub" id="ip-loc">—</div>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-box">
+        <div class="stat-num" id="s-rotations" style="color:var(--accent)">0</div>
+        <div class="stat-lbl">ROTATIONS</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num" id="s-threats" style="color:var(--red)">0</div>
+        <div class="stat-lbl">THREATS</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num" id="s-blocked" style="color:var(--yellow)">0</div>
+        <div class="stat-lbl">ADS BLOCKED</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num" id="s-peers" style="color:var(--purple)">0</div>
+        <div class="stat-lbl">WG PEERS</div>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--muted);padding:4px 0 8px">
+      <span>↓ <span id="s-rx" style="color:var(--accent)">—</span></span>
+      <span>↑ <span id="s-tx" style="color:var(--purple)">—</span></span>
+      <span>UPDATED: <span id="s-time" style="color:var(--green)">—</span></span>
+    </div>
+    <button class="btn btn-c" onclick="openDashboard()">⬡ OPEN FULL DASHBOARD</button>
+  </div>
+
+  <!-- CONTROLS PANEL -->
+  <div class="panel" id="panel-controls">
+    <div class="btns-row" style="margin-bottom:10px">
+      <button class="btn btn-g" onclick="rotateIP()">⟳ ROTATE IP</button>
+      <button class="btn btn-c" onclick="newCircuit()">⬡ NEW CIRCUIT</button>
+    </div>
+    <button class="btn btn-y" onclick="restartWG()">↺ RESTART WIREGUARD</button>
+
+    <div style="border-top:1px solid var(--border);margin:10px 0;padding-top:10px">
+      <div class="toggles">
+        <div class="trow">
+          <div>
+            <div class="trow-label">AUTO ROTATE IP</div>
+            <div class="trow-sub">Every 30 seconds</div>
+          </div>
+          <div class="tog" id="tog-rotate" onclick="toggleSetting('rotate')"></div>
+        </div>
+        <div class="trow">
+          <div>
+            <div class="trow-label">BLOCK ADS</div>
+            <div class="trow-sub">DNS-level ad blocking</div>
+          </div>
+          <div class="tog on" id="tog-ads" onclick="toggleSetting('ads')"></div>
+        </div>
+        <div class="trow">
+          <div>
+            <div class="trow-label">BLOCK TRACKERS</div>
+            <div class="trow-sub">Analytics & fingerprinting</div>
+          </div>
+          <div class="tog on" id="tog-trackers" onclick="toggleSetting('trackers')"></div>
+        </div>
+        <div class="trow">
+          <div>
+            <div class="trow-label">ATTACK NOTIFICATIONS</div>
+            <div class="trow-sub">Alert on threats</div>
+          </div>
+          <div class="tog on" id="tog-notifs" onclick="toggleSetting('notifs')"></div>
+        </div>
+        <div class="trow">
+          <div>
+            <div class="trow-label">SPOOF GEOLOCATION</div>
+            <div class="trow-sub">Override navigator.geolocation</div>
+          </div>
+          <div class="tog" id="tog-geo" onclick="toggleSetting('geo')"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- THREATS PANEL -->
+  <div class="panel" id="panel-threats">
+    <div class="attack-banner">
+      <div class="attack-count" id="attack-count">0</div>
+      <div class="attack-desc">
+        browser-level attacks detected<br>
+        this session (XSS, clickjacking, injections)
+      </div>
+    </div>
+    <div style="font-size:9px;color:var(--muted);margin-bottom:8px;letter-spacing:1px">SERVER-SIDE THREATS (FAIL2BAN)</div>
+    <div class="threat-list" id="threat-list">
+      <div style="color:var(--muted);font-size:10px;padding:8px 0">No server threats detected ✓</div>
+    </div>
+    <div style="font-size:9px;color:var(--muted);margin:8px 0 6px;letter-spacing:1px">BROWSER ATTACK LOG</div>
+    <div class="threat-list" id="browser-attack-list">
+      <div style="color:var(--muted);font-size:10px;padding:8px 0">No browser attacks detected ✓</div>
+    </div>
+  </div>
+
+  <!-- CONFIG PANEL -->
+  <div class="panel" id="panel-config">
+    <div class="cfg-group">
+      <label class="cfg-label">SERVER URL (DigitalOcean droplet)</label>
+      <input class="cfg-input" id="cfg-server" type="text" placeholder="http://YOUR_IP:7777">
+    </div>
+    <div class="cfg-group">
+      <label class="cfg-label">USERNAME</label>
+      <input class="cfg-input" id="cfg-user" type="text" placeholder="phantom">
+    </div>
+    <div class="cfg-group">
+      <label class="cfg-label">PASSWORD</label>
+      <input class="cfg-input" id="cfg-pass" type="password" placeholder="your dashboard password">
+    </div>
+    <div class="cfg-group">
+      <label class="cfg-label">ROTATION INTERVAL (SECONDS)</label>
+      <input class="cfg-input" id="cfg-interval" type="number" value="30" min="10" max="300">
+    </div>
+    <button class="btn btn-g" onclick="saveConfig()">✓ SAVE & CONNECT</button>
+    <button class="btn btn-c" onclick="testConnection()" style="margin-top:0">⚡ TEST CONNECTION</button>
+    <div id="cfg-status" style="font-size:10px;color:var(--muted);padding:6px 0;min-height:20px"></div>
+  </div>
+
+  <!-- Status bar -->
+  <div class="sbar">
+    <span>SERVER: <span class="sbar-val" id="sb-server">NOT SET</span></span>
+    <span>LAST SYNC: <span class="sbar-val" id="sb-sync">—</span></span>
+  </div>
+</div>
+
+<script>
+// ─── TAB SWITCHING ────────────────────────────────────────
+function switchTab(evt, name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  evt.target.classList.add('active');
+  document.getElementById('panel-' + name).classList.add('active');
+  if (name === 'threats') loadBrowserAttacks();
+}
+
+// ─── LOAD STATE FROM BACKGROUND ──────────────────────────
+function loadState() {
+  chrome.runtime.sendMessage({ type: 'GET_STATE' }, (res) => {
+    if (!res) return;
+    const { state, config } = res;
+
+    // Connection status
+    const el = document.getElementById('conn-status');
+    if (state.connected) {
+      el.className = 'status-dot on';
+      el.innerHTML = '<div class="dot-circle pulse"></div><span>ACTIVE</span>';
+    } else {
+      el.className = 'status-dot off';
+      el.innerHTML = '<div class="dot-circle"></div><span>OFFLINE</span>';
+    }
+
+    // IP
+    document.getElementById('ip-display').textContent = state.currentIP || 'Not Connected';
+    fetchGeo(state.currentIP);
+
+    // Stats
+    document.getElementById('s-rotations').textContent = state.rotations || 0;
+    document.getElementById('s-threats').textContent   = state.threats   || 0;
+    document.getElementById('s-blocked').textContent   = state.dnsBlocked ? formatNum(state.dnsBlocked) : '0';
+    document.getElementById('s-peers').textContent     = state.peers     || 0;
+    document.getElementById('s-rx').textContent        = state.bandwidthRx || '—';
+    document.getElementById('s-tx').textContent        = state.bandwidthTx || '—';
+    document.getElementById('s-time').textContent      = state.lastUpdate
+      ? new Date(state.lastUpdate).toLocaleTimeString('en-GB') : '—';
+
+    // Config fields
+    if (config.serverUrl) document.getElementById('cfg-server').value = config.serverUrl;
+    if (config.apiUser)   document.getElementById('cfg-user').value   = config.apiUser;
+    if (config.apiPass)   document.getElementById('cfg-pass').value   = config.apiPass;
+    document.getElementById('cfg-interval').value = config.rotateInterval || 30;
+
+    // Toggles
+    setTog('tog-rotate',   config.autoRotate);
+    setTog('tog-notifs',   config.showNotifications !== false);
+    setTog('tog-ads',      config.blockAds !== false);
+    setTog('tog-trackers', config.blockTrackers !== false);
+    setTog('tog-geo',      !!config.spoofGeo);
+
+    // Server bar
+    document.getElementById('sb-server').textContent = config.serverUrl
+      ? config.serverUrl.replace('http://','').replace('https://','') : 'NOT SET';
+    document.getElementById('sb-sync').textContent = state.lastUpdate
+      ? new Date(state.lastUpdate).toLocaleTimeString('en-GB') : '—';
+
+    // Threats
+    if (state.threats > 0 || res.threats) loadThreats(config);
+  });
+}
+
+function setTog(id, on) {
+  const el = document.getElementById(id);
+  if (el) el.classList.toggle('on', !!on);
+}
+
+function formatNum(n) {
+  if (n > 1000000) return (n/1000000).toFixed(1)+'M';
+  if (n > 1000)    return (n/1000).toFixed(1)+'K';
+  return n.toString();
+}
+
+// ─── GEO LOOKUP ──────────────────────────────────────────
+const geoCache = {};
+async function fetchGeo(ip) {
+  if (!ip || ip === 'Not Connected') return;
+  if (geoCache[ip]) { document.getElementById('ip-loc').textContent = geoCache[ip]; return; }
+  try {
+    const r = await fetch(`https://ipinfo.io/${ip}/json`);
+    const d = await r.json();
+    const loc = [d.city, d.country].filter(Boolean).join(', ');
+    geoCache[ip] = loc || 'Unknown location';
+    document.getElementById('ip-loc').textContent = geoCache[ip];
+  } catch(e) {}
+}
+
+// ─── API ACTIONS ─────────────────────────────────────────
+function rotateIP() {
+  chrome.runtime.sendMessage({ type: 'ROTATE_IP' }, (res) => {
+    if (res?.ok) { flash('⟳ IP Rotated → ' + (res.newIP || '...')); setTimeout(loadState, 4000); }
+    else flash('⚠ Rotation failed', true);
+  });
+}
+function newCircuit() {
+  chrome.runtime.sendMessage({ type: 'NEW_CIRCUIT' }, (res) => {
+    if (res?.ok) { flash('⬡ New Tor circuit built'); setTimeout(loadState, 2000); }
+    else flash('⚠ Failed', true);
+  });
+}
+function restartWG() {
+  chrome.runtime.sendMessage({ type: 'RESTART_WG' }, (res) => {
+    flash(res?.ok ? '↺ WireGuard restarted' : '⚠ Restart failed', !res?.ok);
+    setTimeout(loadState, 3000);
+  });
+}
+function toggleSetting(key) {
+  const map = {
+    rotate: 'tog-rotate', ads: 'tog-ads',
+    trackers: 'tog-trackers', notifs: 'tog-notifs', geo: 'tog-geo'
+  };
+  const el = document.getElementById(map[key]);
+  const on = el.classList.toggle('on');
+
+  if (key === 'rotate') chrome.runtime.sendMessage({ type: 'TOGGLE_AUTO_ROTATE', enabled: on });
+  if (key === 'ads')    chrome.runtime.sendMessage({ type: 'TOGGLE_BLOCK_ADS', enabled: on });
+  if (key === 'trackers') chrome.runtime.sendMessage({ type: 'TOGGLE_BLOCK_TRACKERS', enabled: on });
+  if (key === 'notifs') chrome.runtime.sendMessage({ type: 'TOGGLE_NOTIFICATIONS', enabled: on });
+  if (key === 'geo') chrome.runtime.sendMessage({ type: 'TOGGLE_SPOOF_GEO', enabled: on });
+}
+
+// ─── CONFIG ──────────────────────────────────────────────
+function saveConfig() {
+  const cfg = {
+    serverUrl:        document.getElementById('cfg-server').value.trim().replace(/\/$/,''),
+    apiUser:          document.getElementById('cfg-user').value.trim(),
+    apiPass:          document.getElementById('cfg-pass').value.trim(),
+    rotateInterval:   parseInt(document.getElementById('cfg-interval').value) || 30,
+    autoRotate: document.getElementById('tog-rotate').classList.contains('on'),
+    showNotifications: document.getElementById('tog-notifs').classList.contains('on'),
+    blockAds: document.getElementById('tog-ads').classList.contains('on'),
+    blockTrackers: document.getElementById('tog-trackers').classList.contains('on'),
+    spoofGeo: document.getElementById('tog-geo').classList.contains('on'),
+  };
+  chrome.runtime.sendMessage({ type: 'SAVE_CONFIG', config: cfg }, (res) => {
+    document.getElementById('cfg-status').style.color = 'var(--green)';
+    document.getElementById('cfg-status').textContent = '✓ Saved. Connecting...';
+    setTimeout(() => { loadState(); switchTabById('status'); }, 1500);
+  });
+}
+
+async function testConnection() {
+  const url  = document.getElementById('cfg-server').value.trim();
+  const user = document.getElementById('cfg-user').value.trim();
+  const pass = document.getElementById('cfg-pass').value.trim();
+  const statusEl = document.getElementById('cfg-status');
+  statusEl.textContent = '⟳ Testing...'; statusEl.style.color = 'var(--yellow)';
+  try {
+    const res = await fetch(url + '/health', { signal: AbortSignal.timeout(5000) });
+    const d = await res.json();
+    statusEl.textContent = '✓ Connected! Server status: ' + d.status;
+    statusEl.style.color = 'var(--green)';
+  } catch(e) {
+    statusEl.textContent = '✗ Failed: ' + e.message;
+    statusEl.style.color = 'var(--red)';
+  }
+}
+
+function openDashboard() {
+  chrome.runtime.sendMessage({ type: 'GET_STATE' }, (res) => {
+    const url = res?.config?.serverUrl;
+    if (url) chrome.tabs.create({ url: url + '/dashboard' });
+    else flash('⚠ No server configured', true);
+  });
+}
+
+// ─── THREATS ─────────────────────────────────────────────
+async function loadThreats(config) {
+  if (!config?.serverUrl) return;
+  try {
+    const auth = btoa((config.apiUser||'phantom') + ':' + (config.apiPass||''));
+    const res = await fetch(config.serverUrl + '/api/threats', {
+      headers: { 'Authorization': 'Basic ' + auth },
+      signal: AbortSignal.timeout(5000),
+    });
+    if (!res.ok) return;
+    const data = await res.json();
+    renderThreats(data.threats || []);
+    document.getElementById('attack-count').textContent = data.threats?.filter(t => t.type === 'BAN').length || 0;
+  } catch(e) {}
+}
+
+function renderThreats(threats) {
+  const el = document.getElementById('threat-list');
+  if (!threats.length) {
+    el.innerHTML = '<div style="color:var(--muted);font-size:10px;padding:8px 0">No server threats ✓</div>';
+    return;
+  }
+  el.innerHTML = threats.slice(0,10).map(t => `
+    <div class="ti">
+      <div class="ti-l">
+        <div class="ti-ip">${t.ip || '—'}</div>
+        <div class="ti-msg">${t.msg || '—'}</div>
+      </div>
+      <span class="badge ${t.severity === 'HIGH' ? 'badge-hi' : t.severity === 'MED' ? 'badge-md' : 'badge-lo'}">${t.type}</span>
+    </div>
+  `).join('');
+}
+
+function loadBrowserAttacks() {
+  chrome.storage.local.get('phantom_attacks', (r) => {
+    const attacks = r.phantom_attacks || [];
+    const el = document.getElementById('browser-attack-list');
+    document.getElementById('attack-count').textContent = attacks.length;
+    if (!attacks.length) {
+      el.innerHTML = '<div style="color:var(--muted);font-size:10px;padding:8px 0">No browser attacks ✓</div>';
+      return;
+    }
+    el.innerHTML = attacks.slice(0,10).map(a => `
+      <div class="ti">
+        <div class="ti-l">
+          <div class="ti-ip" style="color:var(--orange)">${a.type}</div>
+          <div class="ti-msg">${(a.url||'').substring(0,50)}</div>
+        </div>
+        <span class="badge badge-hi">BLOCK</span>
+      </div>
+    `).join('');
+  });
+}
+
+// ─── FLASH MSG ────────────────────────────────────────────
+function flash(msg, err=false) {
+  const el = document.getElementById('cfg-status');
+  el.textContent = msg;
+  el.style.color = err ? 'var(--red)' : 'var(--green)';
+}
+
+function switchTabById(name) {
+  document.querySelectorAll('.tab').forEach((t,i) => {
+    const names = ['status','controls','threats','config'];
+    t.classList.toggle('active', names[i] === name);
+  });
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+}
+
+// Init
+loadState();
+setInterval(loadState, 5000);
+</script>
+</body>
+</html>

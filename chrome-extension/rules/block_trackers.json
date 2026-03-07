@@ -1,0 +1,18 @@
+[
+  {"id":100,"priority":1,"action":{"type":"block"},"condition":{"urlFilter":"||google-analytics.com^","resourceTypes":["script","xmlhttprequest"]}},
+  {"id":101,"priority":1,"action":{"type":"block"},"condition":{"urlFilter":"||analytics.google.com^","resourceTypes":["script","xmlhttprequest"]}},
+  {"id":102,"priority":1,"action":{"type":"block"},"condition":{"urlFilter":"||facebook.com/tr^","resourceTypes":["script","xmlhttprequest","image"]}},
+  {"id":103,"priority":1,"action":{"type":"block"},"condition":{"urlFilter":"||connect.facebook.net^","resourceTypes":["script"]}},
+  {"id":104,"priority":1,"action":{"type":"block"},"condition":{"urlFilter":"||hotjar.com^","resourceTypes":["script","xmlhttprequest"]}},
+  {"id":105,"priority":1,"action":{"type":"block"},"condition":{"urlFilter":"||fullstory.com^","resourceTypes":["script","xmlhttprequest"]}},
+  {"id":106,"priority":1,"action":{"type":"block"},"condition":{"urlFilter":"||mixpanel.com^","resourceTypes":["script","xmlhttprequest"]}},
+  {"id":107,"priority":1,"action":{"type":"block"},"condition":{"urlFilter":"||segment.io^","resourceTypes":["script","xmlhttprequest"]}},
+  {"id":108,"priority":1,"action":{"type":"block"},"condition":{"urlFilter":"||segment.com^","resourceTypes":["script","xmlhttprequest"]}},
+  {"id":109,"priority":1,"action":{"type":"block"},"condition":{"urlFilter":"||amplitude.com^","resourceTypes":["script","xmlhttprequest"]}},
+  {"id":110,"priority":1,"action":{"type":"block"},"condition":{"urlFilter":"||mouseflow.com^","resourceTypes":["script","xmlhttprequest"]}},
+  {"id":111,"priority":1,"action":{"type":"block"},"condition":{"urlFilter":"||crazyegg.com^","resourceTypes":["script","xmlhttprequest"]}},
+  {"id":112,"priority":1,"action":{"type":"block"},"condition":{"urlFilter":"||quantserve.com^","resourceTypes":["script","xmlhttprequest","image"]}},
+  {"id":113,"priority":1,"action":{"type":"block"},"condition":{"urlFilter":"||scorecardresearch.com^","resourceTypes":["script","image"]}},
+  {"id":114,"priority":1,"action":{"type":"block"},"condition":{"urlFilter":"||chartbeat.com^","resourceTypes":["script","xmlhttprequest"]}},
+  {"id":115,"priority":1,"action":{"type":"block"},"condition":{"urlFilter":"||adsafeprotected.com^","resourceTypes":["script","xmlhttprequest"]}}
+]

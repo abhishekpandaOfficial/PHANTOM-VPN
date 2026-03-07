@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PHANTOM VPN — Live Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700&family=Syne:wght@400;700;800&family=Syne+Mono&display=swap" rel="stylesheet">
+<style>
+/* ─── DESIGN SYSTEM ─────────────────────────────────── */
+:root {
+  --bg:       #03070f;
+  --surface:  #07111e;
+  --card:     #0a1828;
+  --border:   #0e2540;
+  --accent:   #00e5ff;
+  --green:    #00ff9d;
+  --purple:   #b47fff;
+  --orange:   #ff7c38;
+  --red:      #ff2d6b;
+  --yellow:   #ffd166;
+  --text:     #d0e8f8;
+  --muted:    #3a6080;
+  --glow-c:   0 0 24px rgba(0,229,255,.35);
+  --glow-g:   0 0 24px rgba(0,255,157,.35);
+  --glow-r:   0 0 24px rgba(255,45,107,.45);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'JetBrains Mono',monospace;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* animated hex grid bg */
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cpath d='M30 5 L55 20 L55 50 L30 65 L5 50 L5 20 Z' fill='none' stroke='rgba(0,229,255,0.04)' stroke-width='1'/%3E%3C/svg%3E");
+  background-size:60px 60px;pointer-events:none;
+  animation:bgDrift 40s linear infinite;
+}
+@keyframes bgDrift{to{background-position:60px 60px}}
+
+/* noise grain */
+body::after{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.03'/%3E%3C/svg%3E");
+  opacity:.4;
+}
+
+/* ─── LAYOUT ──────────────────────────────────────────── */
+.root{position:relative;z-index:1;display:grid;grid-template-rows:auto 1fr;min-height:100vh}
+
+/* ─── HEADER ──────────────────────────────────────────── */
+header{
+  padding:0 28px;
+  height:64px;
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(7,17,30,.9);
+  border-bottom:1px solid var(--border);
+  backdrop-filter:blur(8px);
+  position:sticky;top:0;z-index:100;
+}
+.logo{display:flex;align-items:center;gap:12px}
+.logo-hex{
+  width:36px;height:36px;
+  background:linear-gradient(135deg,var(--accent),var(--purple));
+  clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;
+  animation:hexPulse 3s ease-in-out infinite;
+}
+@keyframes hexPulse{
+  0%,100%{box-shadow:0 0 10px rgba(0,229,255,.4)}
+  50%{box-shadow:0 0 30px rgba(0,229,255,.8),0 0 60px rgba(0,229,255,.2)}
+}
+.logo-text{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;
+  background:linear-gradient(90deg,var(--accent),var(--purple));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  letter-spacing:3px;
+}
+.logo-sub{font-size:9px;color:var(--muted);letter-spacing:2px;margin-top:1px}
+
+.header-right{display:flex;align-items:center;gap:20px}
+#clock{font-size:13px;color:var(--accent);letter-spacing:1px}
+.conn-pill{
+  display:flex;align-items:center;gap:7px;
+  padding:5px 14px;border-radius:2px;
+  font-size:11px;letter-spacing:1.5px;font-weight:700;
+  cursor:pointer;transition:all .3s;
+  font-family:'Syne',sans-serif;
+}
+.conn-pill.offline{background:rgba(255,45,107,.1);border:1px solid var(--red);color:var(--red)}
+.conn-pill.online{background:rgba(0,255,157,.08);border:1px solid var(--green);color:var(--green);box-shadow:var(--glow-g)}
+.conn-pill.connecting{background:rgba(255,209,102,.1);border:1px solid var(--yellow);color:var(--yellow);animation:blink .8s infinite}
+@keyframes blink{50%{opacity:.4}}
+.dot{width:7px;height:7px;border-radius:50%;background:currentColor}
+.dot.pulse{animation:dotPulse 1.4s ease-in-out infinite}
+@keyframes dotPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.4)}}
+
+/* ─── MAIN BODY ───────────────────────────────────────── */
+main{padding:20px 28px;display:flex;flex-direction:column;gap:16px}
+
+/* ─── TOP STATUS ROW ──────────────────────────────────── */
+.status-row{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr 1fr 1fr 1fr;
+  gap:12px;
+}
+.stat-tile{
+  background:var(--card);border:1px solid var(--border);
+  padding:16px;position:relative;overflow:hidden;
+  transition:border-color .3s;
+}
+.stat-tile:hover{border-color:rgba(0,229,255,.3)}
+.stat-tile::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--accent),transparent);
+  opacity:0;transition:opacity .3s;
+}
+.stat-tile:hover::before{opacity:.5}
+.tile-label{font-size:9px;color:var(--muted);letter-spacing:2px;margin-bottom:6px;text-transform:uppercase}
+.tile-value{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--accent);line-height:1}
+.tile-value.green{color:var(--green)}
+.tile-value.red{color:var(--red)}
+.tile-value.purple{color:var(--purple)}
+.tile-value.yellow{color:var(--yellow)}
+.tile-sub{font-size:9px;color:var(--muted);margin-top:5px}
+
+/* ─── MIDDLE GRID ─────────────────────────────────────── */
+.middle-grid{display:grid;grid-template-columns:2fr 1.2fr 1fr;gap:16px;align-items:start}
+
+/* ─── CARD ────────────────────────────────────────────── */
+.card{
+  background:var(--card);border:1px solid var(--border);
+  padding:20px;position:relative;overflow:hidden;
+}
+.card-head{
+  font-family:'Syne',sans-serif;font-size:11px;font-weight:700;
+  letter-spacing:2.5px;color:var(--accent);text-transform:uppercase;
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:16px;padding-bottom:10px;
+  border-bottom:1px solid var(--border);
+}
+.card-head-right{font-family:'JetBrains Mono';font-size:10px;color:var(--muted)}
+
+/* ─── NETWORK CHART ───────────────────────────────────── */
+.chart-wrap{position:relative;height:120px}
+canvas#netChart{width:100%;height:100%}
+.chart-legend{display:flex;gap:16px;margin-top:8px;font-size:10px}
+.legend-item{display:flex;align-items:center;gap:6px;color:var(--muted)}
+.legend-dot{width:8px;height:8px;border-radius:50%}
+
+/* ─── IP DISPLAY ──────────────────────────────────────── */
+.ip-block{
+  background:rgba(0,229,255,.04);border:1px solid rgba(0,229,255,.1);
+  padding:14px;margin-bottom:12px;text-align:center;
+}
+.ip-value{
+  font-family:'Syne Mono',monospace;font-size:22px;color:var(--green);
+  letter-spacing:2px;text-shadow:0 0 20px rgba(0,255,157,.5);
+  animation:ipGlow 2s ease-in-out infinite;
+}
+@keyframes ipGlow{50%{text-shadow:0 0 30px rgba(0,255,157,.8)}}
+.ip-location{font-size:10px;color:var(--muted);margin-top:4px;letter-spacing:1px}
+.ip-real{font-size:10px;color:var(--red);margin-top:3px}
+
+/* ─── ONION ANIMATION ─────────────────────────────────── */
+.onion-wrap{display:flex;align-items:center;justify-content:center;padding:16px 0}
+.onion{position:relative;width:140px;height:140px;display:flex;align-items:center;justify-content:center}
+.oRing{
+  position:absolute;border-radius:50%;border:1.5px solid;
+  animation:spin linear infinite;
+}
+.oRing:nth-child(1){width:140px;height:140px;border-color:rgba(0,229,255,.15);animation-duration:25s}
+.oRing:nth-child(2){width:102px;height:102px;border-color:rgba(180,127,255,.25);animation-duration:16s;animation-direction:reverse}
+.oRing:nth-child(3){width:66px;height:66px;border-color:rgba(0,255,157,.35);animation-duration:10s}
+.oCore{
+  width:30px;height:30px;border-radius:50%;
+  background:radial-gradient(circle,rgba(0,229,255,.3),transparent);
+  border:1px solid var(--accent);
+  display:flex;align-items:center;justify-content:center;font-size:13px;
+  box-shadow:0 0 15px rgba(0,229,255,.4);
+}
+.oDot{position:absolute;width:7px;height:7px;border-radius:50%;top:-3.5px;left:50%;margin-left:-3.5px}
+.oRing:nth-child(1) .oDot{background:var(--accent)}
+.oRing:nth-child(2) .oDot{background:var(--purple)}
+.oRing:nth-child(3) .oDot{background:var(--green)}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.node-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(14,37,64,.6);font-size:11px}
+.node-label{color:var(--muted)}
+.node-val{color:var(--text);font-size:10px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ─── ROTATION RING ───────────────────────────────────── */
+.rot-ring-wrap{display:flex;flex-direction:column;align-items:center;gap:8px;padding:8px 0}
+.rot-svg{transform:rotate(-90deg)}
+.rot-track{fill:none;stroke:rgba(14,37,64,.8);stroke-width:7}
+.rot-fill{fill:none;stroke:var(--accent);stroke-width:7;stroke-linecap:round;transition:stroke-dashoffset 1s linear}
+.rot-num{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--accent);text-align:center}
+.rot-label{font-size:9px;color:var(--muted);letter-spacing:2px;text-align:center}
+.rot-controls{display:flex;flex-direction:column;gap:8px;width:100%}
+.rot-toggle{display:flex;justify-content:space-between;align-items:center;font-size:10px;color:var(--muted);padding:6px 0;border-bottom:1px solid rgba(14,37,64,.6)}
+
+/* ─── TOGGLE ──────────────────────────────────────────── */
+.tog{
+  width:40px;height:20px;background:rgba(14,37,64,.8);border:1px solid var(--border);
+  border-radius:10px;cursor:pointer;position:relative;transition:background .3s;flex-shrink:0;
+}
+.tog.on{background:rgba(0,255,157,.15);border-color:var(--green)}
+.tog::after{
+  content:'';position:absolute;top:2px;left:2px;
+  width:14px;height:14px;border-radius:50%;
+  background:var(--muted);transition:all .3s;
+}
+.tog.on::after{left:22px;background:var(--green);box-shadow:0 0 6px rgba(0,255,157,.6)}
+
+/* ─── THREAT FEED ─────────────────────────────────────── */
+.threat-feed{max-height:280px;overflow-y:auto}
+.threat-feed::-webkit-scrollbar{width:3px}
+.threat-feed::-webkit-scrollbar-thumb{background:var(--border)}
+.threat-item{
+  display:grid;grid-template-columns:auto 1fr auto;gap:8px;
+  padding:8px 0;border-bottom:1px solid rgba(14,37,64,.4);align-items:start;
+}
+.threat-icon{font-size:14px;margin-top:1px}
+.threat-body{}
+.threat-ip{font-size:11px;color:var(--text)}
+.threat-msg{font-size:9px;color:var(--muted);margin-top:2px}
+.threat-time{font-size:9px;color:var(--muted)}
+.badge{
+  display:inline-block;padding:2px 6px;border-radius:2px;
+  font-size:8px;letter-spacing:1px;font-family:'Syne',sans-serif;font-weight:700;
+}
+.badge-hi{background:rgba(255,45,107,.15);border:1px solid rgba(255,45,107,.4);color:var(--red)}
+.badge-md{background:rgba(255,209,102,.1);border:1px solid rgba(255,209,102,.3);color:var(--yellow)}
+.badge-lo{background:rgba(0,229,255,.08);border:1px solid rgba(0,229,255,.2);color:var(--accent)}
+.badge-ok{background:rgba(0,255,157,.08);border:1px solid rgba(0,255,157,.2);color:var(--green)}
+
+/* ─── TERMINAL ────────────────────────────────────────── */
+.terminal{
+  background:#020810;border:1px solid var(--border);
+  padding:12px;font-size:11px;height:160px;overflow-y:auto;
+  line-height:1.9;
+}
+.terminal::-webkit-scrollbar{width:3px}
+.terminal::-webkit-scrollbar-thumb{background:var(--border)}
+.tl{display:flex;gap:10px}
+.t-time{color:var(--muted);flex-shrink:0;font-size:10px}
+.t-ok{color:var(--green)}.t-info{color:var(--accent)}.t-warn{color:var(--yellow)}.t-err{color:var(--red)}
+
+/* ─── BOTTOM GRID ─────────────────────────────────────── */
+.bottom-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+
+/* ─── DNS STATS ───────────────────────────────────────── */
+.dns-bar-wrap{margin-top:8px}
+.dns-bar-row{display:flex;justify-content:space-between;font-size:10px;margin-bottom:4px;color:var(--muted)}
+.dns-bar-val{color:var(--text)}
+.bar-track{height:5px;background:rgba(14,37,64,.8);border-radius:3px;overflow:hidden;margin-bottom:10px}
+.bar-fill{height:100%;border-radius:3px;transition:width .6s ease}
+.bar-cyan{background:linear-gradient(90deg,var(--accent),var(--purple))}
+.bar-red{background:linear-gradient(90deg,var(--red),var(--orange))}
+.bar-green{background:linear-gradient(90deg,var(--green),var(--accent))}
+
+/* ─── PEERS TABLE ─────────────────────────────────────── */
+.peers-table{width:100%;border-collapse:collapse;font-size:10px}
+.peers-table th{color:var(--muted);font-weight:400;text-align:left;padding:4px 8px;border-bottom:1px solid var(--border)}
+.peers-table td{padding:5px 8px;border-bottom:1px solid rgba(14,37,64,.4);color:var(--text)}
+.peers-table tr:last-child td{border-bottom:none}
+
+/* ─── SYSTEM METRICS ──────────────────────────────────── */
+.metric-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(14,37,64,.5)}
+.metric-label{font-size:10px;color:var(--muted)}
+.metric-val{font-family:'Syne',sans-serif;font-size:13px;font-weight:700}
+
+/* ─── BUTTONS ─────────────────────────────────────────── */
+.btn{
+  padding:8px 16px;border:1px solid;background:transparent;
+  cursor:pointer;font-family:'JetBrains Mono';font-size:10px;
+  letter-spacing:1.5px;font-weight:700;transition:all .2s;
+  text-transform:uppercase;
+  clip-path:polygon(0 0,calc(100% - 7px) 0,100% 7px,100% 100%,7px 100%,0 calc(100% - 7px));
+}
+.btn-c{border-color:var(--accent);color:var(--accent)}
+.btn-c:hover{background:rgba(0,229,255,.1);box-shadow:var(--glow-c)}
+.btn-g{border-color:var(--green);color:var(--green)}
+.btn-g:hover{background:rgba(0,255,157,.1);box-shadow:var(--glow-g)}
+.btn-r{border-color:var(--red);color:var(--red)}
+.btn-r:hover{background:rgba(255,45,107,.1);box-shadow:var(--glow-r)}
+.btn-sm{padding:5px 12px;font-size:9px}
+.btns-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+
+/* ─── CONNECTION MODAL ────────────────────────────────── */
+#setup-modal{
+  position:fixed;inset:0;background:rgba(3,7,15,.95);z-index:1000;
+  display:flex;align-items:center;justify-content:center;
+}
+.modal-box{
+  background:var(--card);border:1px solid var(--accent);
+  padding:32px;max-width:480px;width:90%;
+  clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,16px 100%,0 calc(100% - 16px));
+}
+.modal-box h2{font-family:'Syne',sans-serif;font-size:18px;color:var(--accent);margin-bottom:8px}
+.modal-box p{font-size:12px;color:var(--muted);margin-bottom:20px;line-height:1.7}
+.modal-form{display:flex;flex-direction:column;gap:12px}
+.modal-form label{font-size:10px;color:var(--muted);letter-spacing:1px;display:block;margin-bottom:4px}
+.modal-form input{
+  width:100%;background:#020810;border:1px solid var(--border);
+  color:var(--text);padding:10px 14px;font-family:'JetBrains Mono';font-size:12px;
+  outline:none;transition:border-color .2s;
+}
+.modal-form input:focus{border-color:var(--accent)}
+
+/* ─── NOTIFICATION ────────────────────────────────────── */
+#notif{
+  position:fixed;bottom:24px;right:24px;z-index:999;
+  padding:12px 20px;background:var(--card);
+  border:1px solid var(--green);color:var(--green);
+  font-size:12px;letter-spacing:.5px;
+  transform:translateY(80px);opacity:0;transition:all .3s;
+  max-width:320px;
+  clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));
+}
+#notif.show{transform:translateY(0);opacity:1}
+#notif.err{border-color:var(--red);color:var(--red)}
+
+/* ─── RESPONSIVE ──────────────────────────────────────── */
+@media(max-width:1100px){
+  .status-row{grid-template-columns:repeat(3,1fr)}
+  .middle-grid{grid-template-columns:1fr 1fr}
+  .bottom-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:700px){
+  .status-row{grid-template-columns:repeat(2,1fr)}
+  .middle-grid,.bottom-grid{grid-template-columns:1fr}
+  header{padding:0 16px}
+  main{padding:14px 16px}
+}
+
+/* ─── SERVER URL CONFIG BAR ───────────────────────────── */
+#config-bar{
+  background:rgba(255,45,107,.08);border-bottom:1px solid rgba(255,45,107,.3);
+  padding:8px 28px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  font-size:11px;color:var(--red);
+}
+#config-bar.hidden{display:none}
+#config-bar span{color:var(--muted)}
+#config-bar input{
+  background:#020810;border:1px solid rgba(255,45,107,.4);color:var(--text);
+  padding:4px 10px;font-family:'JetBrains Mono';font-size:11px;
+  outline:none;width:280px;
+}
+#config-bar input:focus{border-color:var(--red)}
+</style>
+</head>
+<body>
+<div id="notif"></div>
+
+<!-- Config bar shows when not connected to server -->
+<div id="config-bar">
+  ⚠ NOT CONNECTED TO SERVER — <span>Enter your DigitalOcean droplet address:</span>
+  <input id="server-url-input" type="text" placeholder="http://YOUR_DROPLET_IP:7777" value="">
+  <input id="api-user-input" type="text" placeholder="phantom" value="phantom" style="width:100px">
+  <input id="api-pass-input" type="password" placeholder="password" style="width:130px">
+  <button class="btn btn-c btn-sm" onclick="saveServerConfig()">CONNECT</button>
+</div>
+
+<div class="root">
+  <header>
+    <div class="logo">
+      <div class="logo-hex">🛡</div>
+      <div>
+        <div class="logo-text">PHANTOM VPN</div>
+        <div class="logo-sub">REAL-TIME SECURITY DASHBOARD</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div id="clock"></div>
+      <div id="uptime-badge" style="font-size:10px;color:var(--muted)">UPTIME: 00:00:00</div>
+      <div id="stream-status" class="conn-pill offline">
+        <div class="dot"></div>
+        <span>DISCONNECTED</span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- ── STATUS ROW ── -->
+    <div class="status-row">
+      <div class="stat-tile">
+        <div class="tile-label">VISIBLE IP</div>
+        <div class="tile-value green" id="tile-ip" style="font-size:14px;letter-spacing:1px">—.—.—.—</div>
+        <div class="tile-sub" id="tile-country">NOT CONNECTED</div>
+      </div>
+      <div class="stat-tile">
+        <div class="tile-label">DOWNLOAD</div>
+        <div class="tile-value" id="tile-rx">— MB</div>
+        <div class="tile-sub">Total received</div>
+      </div>
+      <div class="stat-tile">
+        <div class="tile-label">UPLOAD</div>
+        <div class="tile-value purple" id="tile-tx">— MB</div>
+        <div class="tile-sub">Total sent</div>
+      </div>
+      <div class="stat-tile">
+        <div class="tile-label">THREATS BLOCKED</div>
+        <div class="tile-value red" id="tile-threats">0</div>
+        <div class="tile-sub">Banned IPs (Fail2Ban)</div>
+      </div>
+      <div class="stat-tile">
+        <div class="tile-label">DNS BLOCKED</div>
+        <div class="tile-value yellow" id="tile-dns-blocked">0</div>
+        <div class="tile-sub">Ads/trackers blocked</div>
+      </div>
+      <div class="stat-tile">
+        <div class="tile-label">IP ROTATIONS</div>
+        <div class="tile-value" id="tile-rotations">0</div>
+        <div class="tile-sub">Tor circuit changes</div>
+      </div>
+    </div>
+
+    <!-- ── MIDDLE ── -->
+    <div class="middle-grid">
+
+      <!-- Network chart + IP -->
+      <div class="card">
+        <div class="card-head">
+          NETWORK TRAFFIC
+          <span class="card-head-right" id="speed-label">↑ 0 KB/s  ↓ 0 KB/s</span>
+        </div>
+        <div class="ip-block">
+          <div class="ip-value" id="ip-main">Not Connected</div>
+          <div class="ip-location" id="ip-loc">— Fetching location...</div>
+          <div class="ip-real" id="ip-real-warn"></div>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="netChart"></canvas>
+        </div>
+        <div class="chart-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:var(--accent)"></div>Download (KB/s)</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--purple)"></div>Upload (KB/s)</div>
+        </div>
+        <div class="btns-row">
+          <button class="btn btn-c btn-sm" onclick="apiPost('/api/rotate')">⟳ ROTATE IP</button>
+          <button class="btn btn-c btn-sm" onclick="apiPost('/api/tor/newcircuit')">⬡ NEW CIRCUIT</button>
+          <button class="btn btn-r btn-sm" onclick="apiPost('/api/wg/restart')">↺ RESTART WG</button>
+        </div>
+      </div>
+
+      <!-- Onion routing panel -->
+      <div class="card">
+        <div class="card-head">ONION ROUTING</div>
+        <div class="onion-wrap">
+          <div class="onion">
+            <div class="oRing"><div class="oDot"></div></div>
+            <div class="oRing"><div class="oDot"></div></div>
+            <div class="oRing"><div class="oDot"></div></div>
+            <div class="oCore">🔒</div>
+          </div>
+        </div>
+        <div class="node-row"><span class="node-label">ENTRY NODE</span><span class="node-val" id="nd-entry">—</span></div>
+        <div class="node-row"><span class="node-label">RELAY NODE</span><span class="node-val" id="nd-relay">—</span></div>
+        <div class="node-row"><span class="node-label">EXIT NODE</span><span class="node-val" id="nd-exit">—</span></div>
+        <div class="node-row"><span class="node-label">CIRCUITS</span><span class="node-val" id="nd-circuits">0</span></div>
+        <div class="node-row"><span class="node-label">VPN PEERS</span><span class="node-val" id="nd-peers">0</span></div>
+      </div>
+
+      <!-- IP Rotation timer -->
+      <div class="card">
+        <div class="card-head">IP ROTATION</div>
+        <div class="rot-ring-wrap">
+          <svg width="100" height="100" class="rot-svg">
+            <circle class="rot-track" cx="50" cy="50" r="42"/>
+            <circle id="rot-circle" class="rot-fill" cx="50" cy="50" r="42"
+              stroke-dasharray="264" stroke-dashoffset="0"/>
+          </svg>
+          <div class="rot-num" id="rot-count">—</div>
+          <div class="rot-label">SECONDS TO ROTATE</div>
+        </div>
+        <div class="rot-controls">
+          <div class="rot-toggle">
+            <span>AUTO ROTATE</span>
+            <div class="tog" id="auto-tog" onclick="toggleAutoRotate()"></div>
+          </div>
+          <div class="rot-toggle">
+            <span>KILL SWITCH</span>
+            <div class="tog on" onclick="this.classList.toggle('on')"></div>
+          </div>
+          <div class="rot-toggle">
+            <span>DNS PROTECTION</span>
+            <div class="tog on" onclick="this.classList.toggle('on')"></div>
+          </div>
+        </div>
+        <button class="btn btn-g btn-sm" style="width:100%;margin-top:10px" onclick="apiPost('/api/rotate')">⟳ FORCE ROTATE</button>
+      </div>
+    </div>
+
+    <!-- ── BOTTOM ── -->
+    <div class="bottom-grid">
+
+      <!-- Threat monitor -->
+      <div class="card">
+        <div class="card-head">
+          LIVE THREAT MONITOR
+          <span class="card-head-right" id="threat-count-badge">0 THREATS</span>
+        </div>
+        <div class="threat-feed" id="threat-feed">
+          <div style="color:var(--muted);font-size:11px;padding:8px 0">No threats detected — system secure</div>
+        </div>
+        <div class="btns-row">
+          <span class="badge badge-hi">HIGH</span>
+          <span class="badge badge-md">MEDIUM</span>
+          <span class="badge badge-lo">LOW</span>
+          <span class="badge badge-ok">SAFE</span>
+        </div>
+      </div>
+
+      <!-- DNS stats + activity log -->
+      <div class="card">
+        <div class="card-head">DNS & AD BLOCKING</div>
+        <div class="dns-bar-wrap">
+          <div class="dns-bar-row"><span>DNS QUERIES</span><span class="dns-bar-val" id="dns-q">0</span></div>
+          <div class="bar-track"><div class="bar-fill bar-cyan" id="dns-q-bar" style="width:0%"></div></div>
+          <div class="dns-bar-row"><span>ADS BLOCKED</span><span class="dns-bar-val" id="dns-b">0</span></div>
+          <div class="bar-track"><div class="bar-fill bar-red" id="dns-b-bar" style="width:0%"></div></div>
+          <div class="dns-bar-row"><span>BLOCK RATE</span><span class="dns-bar-val" id="dns-pct">0%</span></div>
+          <div class="bar-track"><div class="bar-fill bar-green" id="dns-pct-bar" style="width:0%"></div></div>
+        </div>
+        <div style="border-top:1px solid var(--border);padding-top:12px;margin-top:4px">
+          <div class="card-head" style="margin-bottom:8px;padding-bottom:6px">ACTIVITY LOG</div>
+          <div class="terminal" id="act-log"></div>
+        </div>
+      </div>
+
+      <!-- System metrics + peers -->
+      <div class="card">
+        <div class="card-head">SYSTEM METRICS</div>
+        <div class="metric-row"><span class="metric-label">CPU USAGE</span><span class="metric-val" id="cpu" style="color:var(--accent)">—%</span></div>
+        <div class="metric-row"><span class="metric-label">MEMORY</span><span class="metric-val" id="mem" style="color:var(--purple)">—%</span></div>
+        <div class="metric-row"><span class="metric-label">LOAD AVG</span><span class="metric-val" id="load" style="color:var(--green);font-size:11px">—</span></div>
+        <div class="metric-row"><span class="metric-label">SERVER UPTIME</span><span class="metric-val" id="s-uptime" style="color:var(--yellow);font-size:11px">—</span></div>
+        <div style="border-top:1px solid var(--border);margin-top:10px;padding-top:10px">
+          <div class="card-head" style="margin-bottom:8px;padding-bottom:6px">CONNECTED PEERS</div>
+          <table class="peers-table">
+            <thead><tr><th>ENDPOINT</th><th>RX</th><th>TX</th></tr></thead>
+            <tbody id="peers-tbody"><tr><td colspan="3" style="color:var(--muted)">No peers</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+// ─── CONFIG ─────────────────────────────────────────────
+let SERVER_URL = localStorage.getItem('phantom_server') || '';
+let API_USER   = localStorage.getItem('phantom_user')   || 'phantom';
+let API_PASS   = localStorage.getItem('phantom_pass')   || '';
+let autoRotate = false;
+let rotInterval = 30;
+let rotCountdown = 30;
+let rotTimer = null;
+let connectedToStream = false;
+let prevRxBytes = 0, prevTxBytes = 0;
+let lastRxRate = 0, lastTxRate = 0;
+
+// Chart data
+const MAX_POINTS = 60;
+let rxHistory = new Array(MAX_POINTS).fill(0);
+let txHistory = new Array(MAX_POINTS).fill(0);
+
+// Show config bar if no server configured
+if (!SERVER_URL) document.getElementById('config-bar').classList.remove('hidden');
+else {
+  document.getElementById('server-url-input').value = SERVER_URL;
+  document.getElementById('config-bar').classList.add('hidden');
+}
+
+// ─── CANVAS CHART ────────────────────────────────────────
+const canvas = document.getElementById('netChart');
+const ctx = canvas.getContext('2d');
+canvas.width  = canvas.offsetWidth  || 600;
+canvas.height = canvas.offsetHeight || 120;
+window.addEventListener('resize', () => {
+  canvas.width = canvas.offsetWidth;
+  drawChart();
+});
+
+function drawChart() {
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0,0,W,H);
+
+  // grid
+  ctx.strokeStyle = 'rgba(14,37,64,0.5)';
+  ctx.lineWidth = 0.5;
+  for (let i = 0; i < 5; i++) {
+    const y = (H / 4) * i;
+    ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke();
+  }
+
+  const maxVal = Math.max(...rxHistory, ...txHistory, 1);
+  const drawLine = (data, color, fill) => {
+    const step = W / (MAX_POINTS - 1);
+    ctx.beginPath();
+    data.forEach((v,i) => {
+      const x = i * step;
+      const y = H - (v / maxVal) * H * 0.9;
+      i === 0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+    });
+    if (fill) {
+      ctx.lineTo(W, H); ctx.lineTo(0, H); ctx.closePath();
+      const grad = ctx.createLinearGradient(0,0,0,H);
+      grad.addColorStop(0, fill + '40'); grad.addColorStop(1, fill + '00');
+      ctx.fillStyle = grad; ctx.fill();
+    }
+    ctx.strokeStyle = color; ctx.lineWidth = 1.5; ctx.stroke();
+  };
+
+  drawLine(rxHistory, '#00e5ff', '#00e5ff');
+  drawLine(txHistory, '#b47fff', '#b47fff');
+}
+
+// ─── SSE CONNECTION ───────────────────────────────────────
+let evtSource = null;
+
+function connectSSE() {
+  if (!SERVER_URL) return;
+  const auth = btoa(API_USER + ':' + API_PASS);
+  const url  = `${SERVER_URL}/stream`;
+
+  // EventSource doesn't support custom headers, use URL-encoded auth trick
+  // We'll poll the status API every 5s as fallback and use /stream with query param
+  startPolling();
+}
+
+function startPolling() {
+  if (!SERVER_URL) return;
+  setInterval(fetchStatus, 5000);
+  fetchStatus();
+}
+
+async function fetchStatus() {
+  if (!SERVER_URL) return;
+  try {
+    const auth = btoa(API_USER + ':' + API_PASS);
+    const res = await fetch(`${SERVER_URL}/api/status`, {
+      headers: { 'Authorization': 'Basic ' + auth }
+    });
+    if (!res.ok) throw new Error('Auth failed');
+    const data = await res.json();
+    updateDashboard(data);
+    if (!connectedToStream) {
+      connectedToStream = true;
+      document.getElementById('config-bar').classList.add('hidden');
+      setStreamStatus('online');
+      addLog('ok', '[SYS]', 'Connected to PHANTOM server at ' + SERVER_URL);
+    }
+  } catch(e) {
+    if (connectedToStream) {
+      setStreamStatus('offline');
+      addLog('err', '[SYS]', 'Lost connection to server: ' + e.message);
+      connectedToStream = false;
+    }
+  }
+}
+
+async function fetchThreats() {
+  if (!SERVER_URL) return;
+  try {
+    const auth = btoa(API_USER + ':' + API_PASS);
+    const res = await fetch(`${SERVER_URL}/api/threats`, {
+      headers: { 'Authorization': 'Basic ' + auth }
+    });
+    if (!res.ok) return;
+    const data = await res.json();
+    renderThreats(data.threats || []);
+  } catch(e) {}
+}
+setInterval(fetchThreats, 10000);
+
+// ─── UPDATE DASHBOARD ────────────────────────────────────
+function updateDashboard(d) {
+  // IP
+  const ip = d.ip || '—';
+  document.getElementById('tile-ip').textContent = ip;
+  document.getElementById('ip-main').textContent = ip;
+  document.getElementById('nd-circuits').textContent = d.tor?.circuits || 0;
+  document.getElementById('nd-peers').textContent = d.peers || 0;
+  document.getElementById('tile-rotations').textContent = d.tor?.rotations || 0;
+  document.getElementById('rot-count').textContent = rotCountdown;
+  document.getElementById('nd-entry').textContent = 'Guard-' + (ip.split('.')[0] || '?') + '-Node';
+  document.getElementById('nd-relay').textContent = 'Relay-' + (ip.split('.')[1] || '?') + '-Node';
+  document.getElementById('nd-exit').textContent  = 'Exit-'  + (ip.split('.')[2] || '?') + '-Node';
+
+  // Geo lookup for IP
+  fetchGeo(ip);
+
+  // Network
+  const rx = d.network?.rxBytes || 0;
+  const tx = d.network?.txBytes || 0;
+  const rxRate = Math.max(0, (rx - prevRxBytes) / 5 / 1024); // KB/s
+  const txRate = Math.max(0, (tx - prevTxBytes) / 5 / 1024);
+  if (prevRxBytes > 0) { lastRxRate = rxRate; lastTxRate = txRate; }
+  prevRxBytes = rx; prevTxBytes = tx;
+
+  document.getElementById('tile-rx').textContent = d.network?.rx || '—';
+  document.getElementById('tile-tx').textContent = d.network?.tx || '—';
+  document.getElementById('speed-label').textContent =
+    '↑ ' + lastTxRate.toFixed(1) + ' KB/s  ↓ ' + lastRxRate.toFixed(1) + ' KB/s';
+
+  rxHistory.push(lastRxRate); rxHistory.shift();
+  txHistory.push(lastTxRate); txHistory.shift();
+  drawChart();
+
+  // DNS
+  const dnsQ = d.dns?.queries || 0;
+  const dnsB = d.dns?.blocked || 0;
+  const dnsPct = dnsQ > 0 ? Math.round(dnsB / dnsQ * 100) : 0;
+  document.getElementById('tile-dns-blocked').textContent = dnsB.toLocaleString();
+  document.getElementById('dns-q').textContent = dnsQ.toLocaleString();
+  document.getElementById('dns-b').textContent = dnsB.toLocaleString();
+  document.getElementById('dns-pct').textContent = dnsPct + '%';
+  document.getElementById('dns-q-bar').style.width  = Math.min(dnsQ / 10000 * 100, 100) + '%';
+  document.getElementById('dns-b-bar').style.width  = Math.min(dnsB / 1000 * 100, 100) + '%';
+  document.getElementById('dns-pct-bar').style.width = dnsPct + '%';
+
+  // System
+  if (d.system) {
+    document.getElementById('cpu').textContent   = (d.system.cpu || 0).toFixed(1) + '%';
+    document.getElementById('mem').textContent   = (d.system.mem || 0).toFixed(1) + '%';
+    document.getElementById('load').textContent  = (d.system.load || ['—','—','—']).join(' ');
+    document.getElementById('s-uptime').textContent = formatUptime(d.system.uptime || 0);
+  }
+
+  // Peers
+  renderPeers(d.peers);
+
+  // Threats
+  document.getElementById('tile-threats').textContent = (d.threats || []).filter(t => t.type === 'BAN').length;
+  document.getElementById('threat-count-badge').textContent = (d.threats || []).length + ' THREATS';
+  if (d.threats?.length) renderThreats(d.threats);
+
+  // VPN uptime
+  if (d.vpn?.uptime) {
+    document.getElementById('uptime-badge').textContent = 'UPTIME: ' + formatUptime(d.vpn.uptime);
+  }
+}
+
+// ─── GEO IP LOOKUP ────────────────────────────────────────
+const geoCache = {};
+async function fetchGeo(ip) {
+  if (!ip || ip === '—' || geoCache[ip]) {
+    if (geoCache[ip]) {
+      document.getElementById('ip-loc').textContent = geoCache[ip];
+      document.getElementById('tile-country').textContent = geoCache[ip];
+    }
+    return;
+  }
+  try {
+    const res = await fetch(`https://ipinfo.io/${ip}/json`);
+    const d = await res.json();
+    const loc = [d.city, d.region, d.country].filter(Boolean).join(', ');
+    geoCache[ip] = loc;
+    document.getElementById('ip-loc').textContent = loc + (d.org ? ' · ' + d.org : '');
+    document.getElementById('tile-country').textContent = loc;
+  } catch(e) {}
+}
+
+// ─── RENDER THREATS ────────────────────────────────────────
+function renderThreats(threats) {
+  const feed = document.getElementById('threat-feed');
+  if (!threats.length) {
+    feed.innerHTML = '<div style="color:var(--muted);font-size:11px;padding:8px 0">No threats detected — system secure ✓</div>';
+    return;
+  }
+  feed.innerHTML = threats.slice(0,20).map(t => `
+    <div class="threat-item">
+      <div class="threat-icon">${t.type === 'BAN' ? '🔴' : t.type === 'PROBE' ? '🟡' : '🔵'}</div>
+      <div class="threat-body">
+        <div class="threat-ip">${t.ip || '—'}</div>
+        <div class="threat-msg">${t.msg || '—'}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+        <span class="badge ${t.severity === 'HIGH' ? 'badge-hi' : t.severity === 'MED' ? 'badge-md' : 'badge-lo'}">${t.type}</span>
+        <span class="threat-time">${(t.time||'').substring(11,16)}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ─── RENDER PEERS ─────────────────────────────────────────
+function renderPeers(peers) {
+  const tbody = document.getElementById('peers-tbody');
+  if (!peers || !peers.length) {
+    tbody.innerHTML = '<tr><td colspan="3" style="color:var(--muted)">No active peers</td></tr>';
+    return;
+  }
+  tbody.innerHTML = peers.map(p => `
+    <tr>
+      <td style="color:var(--accent)">${p.endpoint || '—'}</td>
+      <td style="color:var(--green)">${p.rx || '—'}</td>
+      <td style="color:var(--purple)">${p.tx || '—'}</td>
+    </tr>
+  `).join('');
+}
+
+// ─── API CALLS ────────────────────────────────────────────
+async function apiPost(endpoint) {
+  if (!SERVER_URL) { notify('⚠ Enter server URL first', true); return; }
+  try {
+    const auth = btoa(API_USER + ':' + API_PASS);
+    const res = await fetch(SERVER_URL + endpoint, {
+      method: 'POST',
+      headers: { 'Authorization': 'Basic ' + auth }
+    });
+    const d = await res.json();
+    if (d.success !== false) {
+      notify('✓ ' + endpoint.split('/').pop().toUpperCase() + ' successful');
+      addLog('ok', '[API]', endpoint + ' → ' + JSON.stringify(d).substring(0,60));
+      setTimeout(fetchStatus, 3500);
+    } else {
+      notify('⚠ Command failed', true);
+    }
+  } catch(e) {
+    notify('⚠ API error: ' + e.message, true);
+  }
+}
+
+// ─── AUTO ROTATE TIMER ────────────────────────────────────
+function toggleAutoRotate() {
+  autoRotate = !autoRotate;
+  document.getElementById('auto-tog').classList.toggle('on', autoRotate);
+  if (autoRotate) {
+    rotCountdown = rotInterval;
+    clearInterval(rotTimer);
+    rotTimer = setInterval(() => {
+      rotCountdown--;
+      document.getElementById('rot-count').textContent = rotCountdown;
+      const pct = rotCountdown / rotInterval;
+      document.getElementById('rot-circle').style.strokeDashoffset = 264 * (1 - pct);
+      if (rotCountdown <= 0) {
+        rotCountdown = rotInterval;
+        apiPost('/api/rotate');
+        addLog('info', '[ROT]', 'Auto IP rotation triggered');
+      }
+    }, 1000);
+    notify('⟳ Auto-rotation ON (' + rotInterval + 's)');
+  } else {
+    clearInterval(rotTimer);
+    notify('⟳ Auto-rotation OFF');
+  }
+}
+
+// ─── STREAM STATUS ────────────────────────────────────────
+function setStreamStatus(state) {
+  const el = document.getElementById('stream-status');
+  el.className = 'conn-pill ' + state;
+  el.innerHTML = `<div class="dot ${state === 'online' ? 'pulse' : ''}"></div><span>${state.toUpperCase()}</span>`;
+}
+
+// ─── ACTIVITY LOG ─────────────────────────────────────────
+function addLog(type, tag, msg) {
+  const log = document.getElementById('act-log');
+  const t = new Date().toLocaleTimeString('en-GB');
+  const div = document.createElement('div');
+  div.className = 'tl';
+  div.innerHTML = `<span class="t-time">${t}</span><span class="t-${type}">${tag}</span><span> ${msg}</span>`;
+  log.appendChild(div);
+  if (log.children.length > 100) log.removeChild(log.firstChild);
+  log.scrollTop = log.scrollHeight;
+}
+
+// ─── HELPERS ──────────────────────────────────────────────
+function formatUptime(s) {
+  const h = String(Math.floor(s/3600)).padStart(2,'0');
+  const m = String(Math.floor((s%3600)/60)).padStart(2,'0');
+  const sec = String(s%60).padStart(2,'0');
+  return `${h}:${m}:${sec}`;
+}
+
+function notify(msg, err=false) {
+  const el = document.getElementById('notif');
+  el.textContent = msg;
+  el.className = 'show' + (err ? ' err' : '');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('show'), 3500);
+}
+
+function saveServerConfig() {
+  SERVER_URL = document.getElementById('server-url-input').value.trim().replace(/\/$/, '');
+  API_USER   = document.getElementById('api-user-input').value.trim();
+  API_PASS   = document.getElementById('api-pass-input').value.trim();
+  localStorage.setItem('phantom_server', SERVER_URL);
+  localStorage.setItem('phantom_user',   API_USER);
+  localStorage.setItem('phantom_pass',   API_PASS);
+  document.getElementById('config-bar').classList.add('hidden');
+  connectedToStream = false;
+  fetchStatus();
+  notify('🔗 Connecting to ' + SERVER_URL);
+}
+
+// Clock
+setInterval(() => {
+  document.getElementById('clock').textContent =
+    new Date().toLocaleTimeString('en-GB') + ' UTC';
+}, 1000);
+
+// Initial
+addLog('info', '[SYS]', 'PHANTOM Dashboard initialized. Enter server URL to connect.');
+if (SERVER_URL) { connectSSE(); }
+else { addLog('warn', '[SYS]', 'No server configured. Enter your DigitalOcean IP above.'); }
+drawChart();
+setInterval(drawChart, 2000);
+</script>
+</body>
+</html>
