@@ -90,6 +90,7 @@ button.slim{padding:7px 9px;font-size:11px;border-radius:10px}
 .helper{font-size:11px;color:var(--muted);line-height:1.6}
 .hidden{display:none!important}
 .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.server-card{margin-bottom:12px}
 .info-card{
   background:rgba(255,255,255,.88);
   border:1px solid var(--line);
@@ -174,18 +175,18 @@ pre{
   <div class="grid">
     <section class="panel" id="loginPanel">
       <h2>Admin Sign-In</h2>
-      <label for="api">API URL</label>
-      <input id="api" placeholder="https://vpn.example.com" />
+      <div class="info-card server-card">
+        <span>Connected Server</span>
+        <strong id="serverName">PHANTOM VPN</strong>
+        <code id="serverUrlText">Auto-detecting current server...</code>
+      </div>
       <label for="user">Admin Username</label>
       <input id="user" value="hello@abhishekpanda.com" />
       <label for="pass">Rotating Password</label>
       <input id="pass" type="password" inputmode="numeric" placeholder="Current authenticator code" />
-      <div class="row" style="margin-top:12px">
-        <button class="alt" id="healthBtn">Test API</button>
-        <button class="main" id="loginBtn">Sign In</button>
-      </div>
+      <button class="main" id="loginBtn" style="width:100%;margin-top:12px">Sign In</button>
       <div id="loginStatus" class="status"></div>
-      <p class="helper">Password = the current six-digit code from the QR setup shown during deployment, or from the authenticator app you paired later. If you are an end user, go to <a class="link" href="/vpn">/vpn</a> instead.</p>
+      <p class="helper">Server connection is automatic. You only need the admin username and the current six-digit authenticator code. End users should go to <a class="link" href="/vpn">/vpn</a> instead.</p>
     </section>
 
     <section class="main-grid hidden" id="appPanel">
@@ -298,7 +299,7 @@ pre{
   </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
+<script src="/ui/vendor/qrcode.min.js"></script>
 <script>
 const $ = (id) => document.getElementById(id);
 let authToken = localStorage.getItem('phantom_admin_token') || '';
@@ -308,8 +309,19 @@ let lastFilename = '';
 let qrCode = null;
 
 function apiBase() {
-  const raw = ($('api').value || '').trim().replace(/\/$/, '');
-  return raw || window.location.origin;
+  return window.location.origin.replace(/\/$/, '');
+}
+
+function serverDisplayName(base) {
+  const host = String(base || '').replace(/^https?:\/\//, '');
+  if (host.includes('vercel.app')) return 'PHANTOM Cloud Gateway';
+  if (/^\d+\.\d+\.\d+\.\d+(:\d+)?$/.test(host)) return 'PHANTOM VPN Server';
+  return 'PHANTOM Secure Node';
+}
+
+function renderServerInfo(base) {
+  $('serverName').textContent = serverDisplayName(base);
+  $('serverUrlText').textContent = base;
 }
 
 function setStatus(target, msg, isErr) {
@@ -355,8 +367,10 @@ function downloadConfig() {
 
 async function testApi() {
   try {
+    const base = apiBase();
+    renderServerInfo(base);
     const d = await api('/health', { public: true });
-    setStatus($('loginStatus'), 'API healthy: ' + (d.status || 'ok'), false);
+    setStatus($('loginStatus'), 'Connected to ' + serverDisplayName(base) + ' (' + (d.status || 'ok') + ')', false);
     if (d.adminUser) $('user').value = d.adminUser;
   } catch (e) {
     const msg = String(e.message || '');
@@ -370,7 +384,6 @@ async function testApi() {
 
 async function login() {
   try {
-    const base = apiBase();
     const d = await api('/api/auth/login', {
       method: 'POST',
       public: true,
@@ -384,7 +397,6 @@ async function login() {
     localStorage.setItem('phantom_admin_token', authToken);
     localStorage.setItem('phantom_admin_expiry', authExpiry);
     localStorage.setItem('phantom_admin_user', $('user').value.trim());
-    localStorage.setItem('phantom_server', base);
     localStorage.setItem('phantom_user', $('user').value.trim());
     setStatus($('loginStatus'), 'Signed in until ' + authExpiry.replace('T', ' ').replace('Z', ''), false);
     $('pass').value = '';
@@ -561,18 +573,15 @@ window.approvePayment = approvePayment;
 window.revokeUser = revokeUser;
 
 (function init() {
-  if (window.location.origin.startsWith('http')) {
-    $('api').value = window.location.origin;
-  }
   const savedUser = localStorage.getItem('phantom_admin_user');
   if (savedUser) $('user').value = savedUser;
 
-  $('healthBtn').addEventListener('click', testApi);
   $('loginBtn').addEventListener('click', login);
   $('logoutBtn').addEventListener('click', logout);
   $('refreshBtn').addEventListener('click', refreshUsers);
   $('createBtn').addEventListener('click', createUser);
   $('downloadBtn').addEventListener('click', downloadConfig);
+  testApi();
 
   if (authToken) {
     openApp();

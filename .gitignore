@@ -1,2 +1,8 @@
 artifacts/
 .DS_Store
+.vercel
+node_modules/
+test-results/
+.tmp-qrcodejs-extract/
+*.tgz
+phantom-vault-main/

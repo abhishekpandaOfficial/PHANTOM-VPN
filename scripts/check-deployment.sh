@@ -23,7 +23,7 @@ ARTIFACT_BASE="./artifacts"
 usage() {
   cat <<'USAGE'
 Usage:
-  bash 4-step-by-step-check.sh --vps <DROPLET_IP> [options]
+  bash scripts/check-deployment.sh --vps <DROPLET_IP> [options]
 
 Options:
   --vps <ip>             Droplet public IP (required)
@@ -36,7 +36,7 @@ Options:
   -h, --help             Show this help
 
 Example:
-  bash 4-step-by-step-check.sh --vps 203.0.113.10
+  bash scripts/check-deployment.sh --vps 203.0.113.10
 USAGE
 }
 
@@ -152,7 +152,7 @@ if (( SKIP_DEPLOY == 1 )); then
   warn "Skipping deploy because --skip-deploy was provided."
 else
   SCP_LOG="$OUT_DIR/scp.log"
-  if scp -r 1-deploy.sh 2-monitoring-server.js 3-dashboard.html 5-landing.html 6-admin.html 7-user-dashboard.html 8-routing.html 9-docs.html brand "$TARGET:/root/" >"$SCP_LOG" 2>&1; then
+  if scp -r scripts server pages brand "$TARGET:/root/" >"$SCP_LOG" 2>&1; then
     pass "Deployment files copied."
   else
     if is_password_expired_output "$SCP_LOG"; then
@@ -164,7 +164,7 @@ else
   fi
 
   DEPLOY_LOG="$OUT_DIR/deploy.log"
-  if run_ssh "$TARGET" "bash /root/1-deploy.sh" >"$DEPLOY_LOG" 2>&1; then
+  if run_ssh "$TARGET" "bash /root/scripts/deploy.sh" >"$DEPLOY_LOG" 2>&1; then
     pass "Deploy script finished."
   else
     if is_password_expired_output "$DEPLOY_LOG"; then
@@ -180,7 +180,7 @@ if (( STOP_EARLY == 1 )); then
   echo
   warn "Stopping early to avoid misleading checks."
   info "Fix first: ssh -t ${TARGET} 'passwd'"
-  info "Then rerun: bash 4-step-by-step-check.sh --vps ${VPS_IP}"
+  info "Then rerun: bash scripts/check-deployment.sh --vps ${VPS_IP}"
   exit 2
 fi
 

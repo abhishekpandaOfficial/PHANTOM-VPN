@@ -61,31 +61,31 @@
   "rewrites": [
     {
       "source": "/",
-      "destination": "/5-landing"
+      "destination": "/pages/landing"
     },
     {
       "source": "/vpn",
-      "destination": "/5-landing"
+      "destination": "/pages/landing"
     },
     {
       "source": "/admin",
-      "destination": "/6-admin"
+      "destination": "/pages/admin"
     },
     {
       "source": "/dashboard",
-      "destination": "/3-dashboard"
+      "destination": "/pages/dashboard"
     },
     {
       "source": "/profile",
-      "destination": "/7-user-dashboard"
+      "destination": "/pages/profile"
     },
     {
       "source": "/routing",
-      "destination": "/8-routing"
+      "destination": "/pages/routing"
     },
     {
       "source": "/docs",
-      "destination": "/9-docs"
+      "destination": "/pages/docs"
     },
     {
       "source": "/health",
@@ -112,6 +112,15 @@
     },
     {
       "source": "/3-dashboard.html",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/pages/dashboard",
       "headers": [
         {
           "key": "Cache-Control",

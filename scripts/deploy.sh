@@ -2,7 +2,7 @@
 # ============================================================
 #  PHANTOM VPN — Full DigitalOcean Deployment Script
 #  Run as root on a fresh Ubuntu 22.04 droplet:
-#    curl -O https://YOUR_DOMAIN/1-deploy.sh && bash 1-deploy.sh
+#    curl -O https://YOUR_DOMAIN/scripts/deploy.sh && bash deploy.sh
 # ============================================================
 set -euo pipefail
 RED='\033[0;31m'; GREEN='\033[0;32m'; CYAN='\033[0;36m'; YELLOW='\033[1;33m'; NC='\033[0m'
@@ -306,15 +306,17 @@ ok "Firewall configured."
 log "Step 8/9: Installing monitoring API server..."
 
 mkdir -p /opt/phantom-vpn
-cp /root/2-monitoring-server.js /opt/phantom-vpn/server.js 2>/dev/null || true
-cp /root/3-dashboard.html /opt/phantom-vpn/dashboard.html 2>/dev/null || true
-cp /root/5-landing.html /opt/phantom-vpn/landing.html 2>/dev/null || true
-cp /root/6-admin.html /opt/phantom-vpn/admin.html 2>/dev/null || true
-cp /root/7-user-dashboard.html /opt/phantom-vpn/portal.html 2>/dev/null || true
-cp /root/8-routing.html /opt/phantom-vpn/routing.html 2>/dev/null || true
-cp /root/9-docs.html /opt/phantom-vpn/docs.html 2>/dev/null || true
+cp /root/server/monitoring-server.js /opt/phantom-vpn/server.js 2>/dev/null || true
+cp /root/pages/dashboard.html /opt/phantom-vpn/dashboard.html 2>/dev/null || true
+cp /root/pages/landing.html /opt/phantom-vpn/landing.html 2>/dev/null || true
+cp /root/pages/admin.html /opt/phantom-vpn/admin.html 2>/dev/null || true
+cp /root/pages/profile.html /opt/phantom-vpn/portal.html 2>/dev/null || true
+cp /root/pages/routing.html /opt/phantom-vpn/routing.html 2>/dev/null || true
+cp /root/pages/docs.html /opt/phantom-vpn/docs.html 2>/dev/null || true
 mkdir -p /opt/phantom-vpn/brand
 cp /root/brand/* /opt/phantom-vpn/brand/ 2>/dev/null || true
+mkdir -p /opt/phantom-vpn/ui
+cp -r /root/ui/* /opt/phantom-vpn/ui/ 2>/dev/null || true
 
 cat > /opt/phantom-vpn/package.json <<EOF
 {

@@ -1,0 +1,169 @@
+:root{
+  --background:220 20% 97%;
+  --foreground:220 25% 10%;
+  --card:0 0% 100%;
+  --card-foreground:220 25% 10%;
+  --primary:174 72% 46%;
+  --primary-foreground:220 30% 6%;
+  --secondary:220 15% 92%;
+  --secondary-foreground:220 25% 10%;
+  --muted:220 15% 94%;
+  --muted-foreground:220 10% 46%;
+  --accent:265 60% 55%;
+  --accent-foreground:0 0% 100%;
+  --destructive:0 84% 60%;
+  --destructive-foreground:0 0% 100%;
+  --border:220 15% 88%;
+  --input:220 15% 88%;
+  --ring:174 72% 46%;
+  --phantom-warning:38 92% 50%;
+  --phantom-success:152 69% 45%;
+  --shadow-soft:0 20px 60px rgba(15,23,42,.08);
+  --shadow-strong:0 24px 80px rgba(15,23,42,.18);
+}
+
+body.dark{
+  --background:220 30% 6%;
+  --foreground:210 20% 92%;
+  --card:220 25% 10%;
+  --card-foreground:210 20% 92%;
+  --secondary:220 20% 16%;
+  --secondary-foreground:210 20% 92%;
+  --muted:220 20% 16%;
+  --muted-foreground:215 15% 55%;
+  --destructive:0 62% 30%;
+  --destructive-foreground:0 0% 100%;
+  --border:220 20% 18%;
+  --input:220 20% 18%;
+  --shadow-soft:0 20px 60px rgba(0,0,0,.28);
+  --shadow-strong:0 32px 100px rgba(0,0,0,.4);
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  font-family:'Inter',sans-serif;
+  color:hsl(var(--foreground));
+  background:
+    radial-gradient(ellipse at 20% 12%, hsl(var(--primary) / .12) 0%, transparent 42%),
+    radial-gradient(ellipse at 78% 10%, hsl(var(--accent) / .12) 0%, transparent 40%),
+    radial-gradient(ellipse at 50% 76%, hsl(var(--primary) / .06) 0%, transparent 50%),
+    hsl(var(--background));
+  transition:background .25s ease,color .25s ease;
+}
+
+a{color:inherit}
+img{max-width:100%;display:block}
+button,input,textarea{font:inherit}
+button{cursor:pointer}
+
+.container{width:min(1180px,calc(100% - 32px));margin:0 auto}
+.mono{font-family:'JetBrains Mono',monospace}
+
+.glass{
+  background:hsl(var(--card) / .62);
+  backdrop-filter:blur(18px);
+  border:1px solid hsl(var(--border) / .55);
+  box-shadow:var(--shadow-soft);
+}
+
+.glass-strong{
+  background:hsl(var(--card) / .82);
+  backdrop-filter:blur(24px);
+  border:1px solid hsl(var(--border) / .65);
+  box-shadow:var(--shadow-strong);
+}
+
+.text-gradient-primary{
+  background:linear-gradient(135deg,hsl(var(--primary)),hsl(var(--accent)));
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+
+.section-padding{padding:96px 0}
+
+.section-intro{
+  text-align:center;
+  margin-bottom:56px;
+}
+
+.section-intro .eyebrow{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  font-size:12px;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  font-weight:700;
+  color:hsl(var(--primary));
+  margin-bottom:14px;
+}
+
+.section-intro h2{
+  margin:0 0 14px;
+  font-size:clamp(34px,5vw,56px);
+  line-height:1.04;
+  font-weight:900;
+}
+
+.section-intro p{
+  margin:0 auto;
+  max-width:660px;
+  color:hsl(var(--muted-foreground));
+  line-height:1.8;
+  font-size:15px;
+}
+
+.icon-shell{
+  width:44px;
+  height:44px;
+  border-radius:14px;
+  background:hsl(var(--primary) / .12);
+  color:hsl(var(--primary));
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  padding:14px 22px;
+  border-radius:16px;
+  border:1px solid transparent;
+  text-decoration:none;
+  font-size:15px;
+  font-weight:700;
+  transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease,background .2s ease;
+}
+
+.btn:hover{transform:translateY(-1px)}
+
+.btn-primary{
+  color:hsl(var(--primary-foreground));
+  background:hsl(var(--primary));
+  box-shadow:0 0 40px -10px hsl(var(--primary) / .4),0 0 80px -20px hsl(var(--primary) / .2);
+}
+
+.btn-secondary{
+  color:hsl(var(--foreground));
+  background:transparent;
+  border-color:hsl(var(--border) / .7);
+}
+
+.hidden{display:none!important}
+.portal-link{word-break:break-all;color:hsl(var(--primary));text-decoration:none}
+
+@keyframes pulseGlow{
+  0%,100%{transform:scale(1);opacity:.6}
+  50%{transform:scale(1.12);opacity:1}
+}
+
+@keyframes tunnelFlow{
+  0%{transform:translateX(-12%)}
+  100%{transform:translateX(12%)}
+}

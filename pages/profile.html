@@ -109,7 +109,7 @@ input{
   <header>
     <div>
       <div class="title-row"><img src="/brand/phantomvpn-icon.svg" alt="PHANTOMVPN logo"><h1>Your PHANTOM Monitor</h1></div>
-      <p class="sub">Track remaining trial time, connection status, and payment state. Reconnecting does not reset the free quota: PHANTOM resumes from the time already consumed.</p>
+      <p class="sub">Use this page to see if your VPN is connected, how much free time is left, and what to do next. Reconnecting does not reset your timer.</p>
     </div>
     <div style="display:flex;gap:12px;flex-wrap:wrap">
       <a class="link" href="/vpn">Back to PHANTOM VPN</a>
@@ -132,10 +132,10 @@ input{
       <div style="margin-top:16px">
         <h2 style="font-size:20px">Setup Guide</h2>
         <div class="timeline">
-          <div class="step"><strong>Import your VPN</strong>Use the QR code or downloaded file inside the WireGuard app. The QR shown here is the same VPN profile generated during signup, if this browser still has it.</div>
-          <div class="step"><strong>Connect and verify</strong>Turn the tunnel on in WireGuard. This page refreshes every few seconds and shows your live session duration and access state.</div>
-          <div class="step"><strong>Continue access</strong>When the free hour is consumed or the 15-day cycle ends, pay with Razorpay or submit a manual payment reference. Approval reactivates the same profile.</div>
-          <div class="step"><strong>TOTP note</strong>You do not need a TOTP code on this page. Authenticator codes are only for PHANTOM admin access.</div>
+          <div class="step"><strong>Add your VPN</strong>Use the QR code or downloaded file in the WireGuard app. If this browser still has your original setup, the QR will appear here automatically.</div>
+          <div class="step"><strong>Turn it on</strong>Switch the VPN on in WireGuard. This page refreshes every few seconds and will show when you are connected.</div>
+          <div class="step"><strong>Keep using it</strong>If your free time ends, pay here and keep using the same VPN setup.</div>
+          <div class="step"><strong>No TOTP needed</strong>You do not need an authenticator code on this page. TOTP is only for PHANTOM admin login.</div>
         </div>
       </div>
     </section>
@@ -169,7 +169,7 @@ input{
 </div>
 
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
+<script src="/ui/vendor/qrcode.min.js"></script>
 <script>
 const params = new URLSearchParams(window.location.search);
 const apiRoot = window.location.origin;
@@ -209,11 +209,17 @@ function renderQr() {
   const box = document.getElementById('qrBox');
   box.innerHTML = '';
   if (!config) {
-    box.innerHTML = '<span style="color:#111;padding:0 12px;text-align:center">This browser does not have the original config. Use the file you downloaded during signup.</span>';
+    box.innerHTML = '<span style="color:#111;padding:0 12px;text-align:center">This browser does not have your original setup file. Use the file you downloaded during signup.</span>';
     return;
   }
+  const qrText = config
+    .replace(/\r\n/g, '\n')
+    .split('\n')
+    .filter((line) => !line.trimStart().startsWith('#'))
+    .join('\n')
+    .trim() + '\n';
   if (window.QRCode) {
-    qr = new QRCode(box, { text: config, width: 190, height: 190 });
+    qr = new QRCode(box, { text: qrText, width: 190, height: 190 });
   } else {
     box.innerHTML = '<span style="color:#111">Reload once if the QR does not appear.</span>';
   }
@@ -230,8 +236,8 @@ function renderUser(user, cfg) {
   document.getElementById('emailText').textContent = 'Email: ' + (user.email || '-');
   document.getElementById('paymentText').textContent = 'Payment: ' + (user.paymentStatus || '-');
   document.getElementById('profileCopy').textContent = user.currentConnected
-    ? 'Your tunnel is active right now.'
-    : (user.suspendedReason || 'Connect your WireGuard profile to start using PHANTOM.');
+    ? 'Your VPN is connected right now.'
+    : (user.suspendedReason || 'Turn on your WireGuard VPN to start using PHANTOM.');
 
   const pill = document.getElementById('statusPill');
   pill.textContent = user.currentConnected ? 'Connected' : user.status;

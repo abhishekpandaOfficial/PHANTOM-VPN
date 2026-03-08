@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PHANTOM VPN | Easy Setup, QR Import, Simple Trial</title>
+<meta name="description" content="Start PHANTOM VPN in a few simple steps: sign up, scan the QR, turn the VPN on, and follow your personal status page.">
+<link rel="canonical" href="https://phantom.origixcloud.com/vpn">
+<link rel="icon" type="image/png" sizes="32x32" href="/brand/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/brand/favicon-16.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/ui/landing/styles/tokens.css">
+<link rel="stylesheet" href="/ui/landing/styles/shell.css">
+<link rel="stylesheet" href="/ui/landing/styles/sections.css">
+<link rel="stylesheet" href="/ui/landing/styles/modal.css">
+</head>
+<body class="dark">
+  <div class="topbar-wrap" id="topbarWrap">
+    <div class="container">
+      <div class="topbar glass-strong">
+        <a class="brand" href="#top">
+          <img src="/brand/landing-logo.png" alt="PHANTOM VPN logo">
+          <span>PHANTOM <span>VPN</span></span>
+        </a>
+
+        <nav class="nav-links">
+          <a href="#how-it-works">How It Works</a>
+          <a href="#security">Security</a>
+          <a href="#compare">Compare</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#faq">FAQ</a>
+        </nav>
+
+        <div class="topbar-actions">
+          <button class="icon-btn" id="themeToggle" type="button" aria-label="Toggle theme">
+            <i data-lucide="sun"></i>
+          </button>
+          <button class="btn btn-primary js-open-trial" type="button">Start Free Trial <i data-lucide="arrow-right"></i></button>
+          <button class="menu-btn" id="menuToggle" type="button" aria-label="Toggle menu">
+            <i data-lucide="menu"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="mobile-panel glass-strong" id="mobilePanel">
+        <a class="btn btn-secondary" href="#how-it-works">How It Works</a>
+        <a class="btn btn-secondary" href="#security">Security</a>
+        <a class="btn btn-secondary" href="#compare">Compare</a>
+        <a class="btn btn-secondary" href="#pricing">Pricing</a>
+        <a class="btn btn-secondary" href="#faq">FAQ</a>
+        <button class="btn btn-primary js-open-trial" type="button">Start Free Trial</button>
+      </div>
+    </div>
+  </div>
+
+  <main id="top">
+    <section class="hero">
+      <div class="hero-orb a"></div>
+      <div class="hero-orb b"></div>
+      <div class="container hero-content">
+        <div class="hero-center">
+          <div class="hero-kicker glass">
+            <i data-lucide="shield"></i>
+            <span>Simple VPN setup with private access</span>
+          </div>
+
+          <h1>
+            Your Connection.
+            <br>
+            <span class="text-gradient-primary">Your Identity.</span>
+            <br>
+            Your Rules.
+          </h1>
+
+          <p>
+            Start in a few easy steps: enter your details, get your QR code, scan it in WireGuard, turn the VPN on,
+            and open your personal page to see your status and remaining trial time.
+          </p>
+
+          <div class="hero-actions">
+            <button class="btn btn-primary js-open-trial" type="button">Start Free Trial <i data-lucide="arrow-right"></i></button>
+            <a class="btn btn-secondary" href="#how-it-works"><i data-lucide="lock"></i>See How It Works</a>
+          </div>
+
+          <div class="hero-tunnel glass">
+            <div class="flow-lane one"></div>
+            <div class="flow-lane two"></div>
+            <div class="flow-lane three"></div>
+            <div class="hero-tunnel-grid">
+              <div class="endpoint">
+                <span class="label mono">origin</span>
+                <strong>Your Device</strong>
+                <small>Scan the QR or download the file, turn the VPN on, and check your status on your personal page.</small>
+              </div>
+
+              <div class="endpoint-center">
+                <img src="/brand/landing-logo.png" alt="PHANTOM secure tunnel">
+                <span class="mono">Your VPN Connection</span>
+              </div>
+
+              <div class="endpoint">
+                <span class="label mono">destination</span>
+                <strong>PHANTOM Server</strong>
+                <small>Your server is already included behind the scenes, so you do not need to add it manually.</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="stats">
+            <div class="stat glass">
+              <strong>12,400+</strong>
+              <span>Protected users</span>
+            </div>
+            <div class="stat glass">
+              <strong>99.97%</strong>
+              <span>Measured uptime</span>
+            </div>
+            <div class="stat glass">
+              <strong>847k</strong>
+              <span>Sessions served</span>
+            </div>
+            <div class="stat glass">
+              <strong>2.1M</strong>
+              <span>Threats blocked</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-padding" id="how-it-works">
+      <div class="container">
+        <div class="section-intro">
+          <div class="eyebrow"><span>How It Works</span></div>
+          <h2>Five Steps to Privacy</h2>
+          <p>Everything is broken into simple steps so a new user can get connected without guessing what to do next.</p>
+        </div>
+
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-copy">
+              <div class="timeline-card glass">
+                <div class="step-tag">
+                  <span class="icon-shell"><i data-lucide="user-plus"></i></span>
+                  <div class="step-num mono">Step 1</div>
+                </div>
+                <h3>Create Profile</h3>
+                <p>Enter your name and email. PHANTOM instantly creates your VPN access and gives you your personal link.</p>
+              </div>
+            </div>
+            <div class="timeline-dot"></div>
+            <div class="timeline-spacer"></div>
+          </div>
+
+          <div class="timeline-item reverse">
+            <div class="timeline-copy">
+              <div class="timeline-card glass">
+                <div class="step-tag">
+                  <span class="icon-shell"><i data-lucide="download"></i></span>
+                  <div class="step-num mono">Step 2</div>
+                </div>
+                <h3>Import Config</h3>
+                <p>On phone, scan the QR. On laptop or desktop, download the `.conf` file. No manual server entry is needed.</p>
+              </div>
+            </div>
+            <div class="timeline-dot"></div>
+            <div class="timeline-spacer"></div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-copy">
+              <div class="timeline-card glass">
+                <div class="step-tag">
+                  <span class="icon-shell"><i data-lucide="wifi"></i></span>
+                  <div class="step-num mono">Step 3</div>
+                </div>
+                <h3>Connect</h3>
+                <p>Turn the VPN on in WireGuard and use the built-in check to confirm it is connected.</p>
+              </div>
+            </div>
+            <div class="timeline-dot"></div>
+            <div class="timeline-spacer"></div>
+          </div>
+
+          <div class="timeline-item reverse">
+            <div class="timeline-copy">
+              <div class="timeline-card glass">
+                <div class="step-tag">
+                  <span class="icon-shell"><i data-lucide="monitor"></i></span>
+                  <div class="step-num mono">Step 4</div>
+                </div>
+                <h3>Monitor</h3>
+                <p>Open your personal page to see whether you are connected, how much free time is left, and what to do next.</p>
+              </div>
+            </div>
+            <div class="timeline-dot"></div>
+            <div class="timeline-spacer"></div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-copy">
+              <div class="timeline-card glass">
+                <div class="step-tag">
+                  <span class="icon-shell"><i data-lucide="credit-card"></i></span>
+                  <div class="step-num mono">Step 5</div>
+                </div>
+                <h3>Upgrade</h3>
+                <p>If you want to keep using it after the free time ends, pay once and keep using the same VPN setup.</p>
+              </div>
+            </div>
+            <div class="timeline-dot"></div>
+            <div class="timeline-spacer"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-padding" id="security">
+      <div class="container">
+        <div class="section-intro">
+          <div class="eyebrow"><span>Security Architecture</span></div>
+          <h2>Built for Paranoia</h2>
+          <p>Phantom Vault's card-based presentation is now mapped onto the PHANTOM VPN stack: protocol hardening, routing controls, DNS security, and operational visibility.</p>
+        </div>
+
+        <div class="security-grid">
+          <article class="security-card glass">
+            <span class="icon-shell"><i data-lucide="lock"></i></span>
+            <h3>WireGuard Encrypted Tunnel</h3>
+            <p>Modern cryptography, low attack surface, and dedicated peer configs. Every trial or paid user receives a unique tunnel instead of a pooled shared account.</p>
+          </article>
+          <article class="security-card glass">
+            <span class="icon-shell"><i data-lucide="globe"></i></span>
+            <h3>Optional Tor Routing</h3>
+            <p>The backend and routing docs still support the PHANTOM path through Tor and hardened egress controls when anonymity layering is required.</p>
+          </article>
+          <article class="security-card glass">
+            <span class="icon-shell"><i data-lucide="shield"></i></span>
+            <h3>DNS Hardening</h3>
+            <p>Resolver-level filtering, leak prevention, and ad/tracker blocking remain intact while the landing experience now matches the Phantom Vault visual system.</p>
+          </article>
+          <article class="security-card glass">
+            <span class="icon-shell"><i data-lucide="bug"></i></span>
+            <h3>Threat Monitoring</h3>
+            <p>Real-time monitoring, attack detection, and live dashboard metrics remain available from the existing backend and dashboard routes.</p>
+          </article>
+          <article class="security-card glass">
+            <span class="icon-shell"><i data-lucide="layers"></i></span>
+            <h3>Defense in Depth</h3>
+            <p>WireGuard, DNS filtering, fail2ban, admin controls, and browser-side protections work as layered defenses rather than isolated marketing claims.</p>
+          </article>
+          <article class="security-card glass">
+            <span class="icon-shell"><i data-lucide="eye"></i></span>
+            <h3>Zero-Log Architecture</h3>
+            <p>No traffic logging, no DNS query history, and no hidden session resets. Trial metering remains explicit and anchored to actual usage state.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-padding" id="compare">
+      <div class="container">
+        <div class="section-intro">
+          <div class="eyebrow"><span>Compare</span></div>
+          <h2>See the Difference</h2>
+          <p>PHANTOM now presents the same clean comparison rhythm as Phantom Vault while still reflecting the existing backend features truthfully.</p>
+        </div>
+
+        <div class="compare-shell glass">
+          <div style="overflow-x:auto">
+            <table>
+              <thead>
+                <tr>
+                  <th>Feature</th>
+                  <th class="center">Free VPN</th>
+                  <th class="center">Paid VPN</th>
+                  <th class="center"><span class="text-gradient-primary">PHANTOM</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Dedicated user profile</td>
+                  <td class="center no">No</td>
+                  <td class="center maybe">Partial</td>
+                  <td class="center yes">Yes</td>
+                </tr>
+                <tr>
+                  <td>WireGuard protocol</td>
+                  <td class="center no">No</td>
+                  <td class="center yes">Yes</td>
+                  <td class="center yes">Yes</td>
+                </tr>
+                <tr>
+                  <td>Personal monitoring portal</td>
+                  <td class="center no">No</td>
+                  <td class="center no">No</td>
+                  <td class="center yes">Yes</td>
+                </tr>
+                <tr>
+                  <td>Transparent trial metering</td>
+                  <td class="center no">No</td>
+                  <td class="center no">No</td>
+                  <td class="center yes">Yes</td>
+                </tr>
+                <tr>
+                  <td>Profile continuity after payment</td>
+                  <td class="center no">No</td>
+                  <td class="center maybe">Partial</td>
+                  <td class="center yes">Yes</td>
+                </tr>
+                <tr>
+                  <td>DNS hardening and ad-block</td>
+                  <td class="center no">No</td>
+                  <td class="center yes">Yes</td>
+                  <td class="center yes">Yes</td>
+                </tr>
+                <tr>
+                  <td>TOTP admin security</td>
+                  <td class="center no">No</td>
+                  <td class="center no">No</td>
+                  <td class="center yes">Yes</td>
+                </tr>
+                <tr>
+                  <td>QR config import</td>
+                  <td class="center no">No</td>
+                  <td class="center maybe">Partial</td>
+                  <td class="center yes">Yes</td>
+                </tr>
+                <tr>
+                  <td>Zero-log posture</td>
+                  <td class="center no">No</td>
+                  <td class="center maybe">Partial</td>
+                  <td class="center yes">Yes</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-padding" id="transparency">
+      <div class="container">
+        <div class="section-intro">
+          <div class="eyebrow"><span>User Transparency</span></div>
+          <h2>See Everything. Always.</h2>
+          <p>You can clearly see whether the VPN is connected, how much free time is left, and where to go if you need help or payment.</p>
+        </div>
+
+        <div class="transparency-grid">
+          <article class="monitor-card glass">
+            <span class="icon-shell"><i data-lucide="activity"></i></span>
+            <h3>Live Connection Status</h3>
+            <p>Connection state, handshake recency, endpoint, and portal status remain available through the real user profile API.</p>
+            <div class="monitor-mock">
+              <div class="monitor-row"><span style="color:hsl(var(--muted-foreground))">Status</span><span class="yes">Connected</span></div>
+              <div class="monitor-row"><span style="color:hsl(var(--muted-foreground))">Handshake</span><span>2s ago</span></div>
+              <div class="monitor-row"><span style="color:hsl(var(--muted-foreground))">Endpoint</span><span>185.x.x.x:51820</span></div>
+              <div class="monitor-row"><span style="color:hsl(var(--muted-foreground))">Rx / Tx</span><span>142 MB / 38 MB</span></div>
+            </div>
+          </article>
+
+          <article class="monitor-card glass">
+            <span class="icon-shell"><i data-lucide="clock-3"></i></span>
+            <h3>Trial Timer</h3>
+            <p>The free hour is metered honestly inside a 15-day cycle. Disconnecting and reconnecting continues the same quota instead of resetting it.</p>
+            <div class="monitor-mock" style="text-align:center">
+              <div style="font-size:34px;font-weight:800" class="mono">38:14</div>
+              <div style="color:hsl(var(--muted-foreground));font-size:12px;margin-top:4px">minutes remaining</div>
+              <div class="meter"><span></span></div>
+              <div style="color:hsl(var(--muted-foreground));font-size:12px;margin-top:10px">Cycle resets in 11 days</div>
+            </div>
+          </article>
+
+          <article class="monitor-card glass">
+            <span class="icon-shell"><i data-lucide="bar-chart-3"></i></span>
+            <h3>Profile Monitoring</h3>
+            <p>Each user still gets a unique monitoring link with access state, bandwidth context, payment actions, and refreshable tunnel visibility.</p>
+            <div class="monitor-mock">
+              <div class="monitor-row"><span style="color:hsl(var(--muted-foreground))">Sessions</span><span>47</span></div>
+              <div class="monitor-row"><span style="color:hsl(var(--muted-foreground))">Total time</span><span>126h 34m</span></div>
+              <div class="monitor-row"><span style="color:hsl(var(--muted-foreground))">Avg latency</span><span>42ms</span></div>
+              <div class="monitor-row"><span style="color:hsl(var(--muted-foreground))">Uptime</span><span class="yes">99.98%</span></div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-padding" id="admin">
+      <div class="container">
+        <div class="section-intro">
+          <div class="eyebrow"><span>Admin Control</span></div>
+          <h2>Secure Management</h2>
+          <p>Phantom Vault's structured management section now fronts the real PHANTOM admin flow for provisioning, payment review, and real-time oversight.</p>
+        </div>
+
+        <div class="admin-grid">
+          <article class="admin-card glass">
+            <span class="icon-shell"><i data-lucide="key-round"></i></span>
+            <h3>TOTP Authentication</h3>
+            <p>Admin access continues to require rotating authenticator codes. Public onboarding stays separate from admin authentication and privileged actions.</p>
+          </article>
+          <article class="admin-card glass">
+            <span class="icon-shell"><i data-lucide="users"></i></span>
+            <h3>User Provisioning</h3>
+            <p>Create direct paid users, extra trials, or revoke access from the existing `/admin` route without changing the VPN tunnel model.</p>
+          </article>
+          <article class="admin-card glass">
+            <span class="icon-shell"><i data-lucide="credit-card"></i></span>
+            <h3>Payment Approval</h3>
+            <p>Pending payment requests still flow through the backend and reactivate the same user config when approved, matching the current UX promises.</p>
+          </article>
+          <article class="admin-card glass">
+            <span class="icon-shell"><i data-lucide="shield-check"></i></span>
+            <h3>Real-Time Oversight</h3>
+            <p>The monitoring server still tracks connected peers, session state, and access changes while the public-facing UI now looks consistent with Phantom Vault.</p>
+          </article>
+        </div>
+
+        <div class="admin-preview glass">
+          <div class="traffic-lights">
+            <span class="r"></span><span class="y"></span><span class="g"></span>
+            <strong class="mono" style="margin-left:6px;font-size:12px;color:hsl(var(--muted-foreground))">admin@phantom.local</strong>
+          </div>
+          <div class="admin-user"><span>user_0x4a2f</span><span class="yes">Connected</span><span>Expired</span><span class="yes">Paid</span></div>
+          <div class="admin-user"><span>user_0x9b1c</span><span class="yes">Connected</span><span class="maybe">28:14</span><span>Trial</span></div>
+          <div class="admin-user"><span>user_0x7e3d</span><span>Offline</span><span>Expired</span><span class="yes">Paid</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-padding" id="onboarding">
+      <div class="container">
+        <div class="section-intro">
+          <div class="eyebrow"><span>Onboarding</span></div>
+          <h2>Guided Setup Wizard</h2>
+          <p>After signup, users get a simple guided flow on screen so they can finish setup step by step.</p>
+        </div>
+
+        <div class="wizard-preview glass">
+          <div class="progress-steps">
+            <span class="step-ball active">1</span>
+            <span class="track active"></span>
+            <span class="step-ball active">2</span>
+            <span class="track"></span>
+            <span class="step-ball">3</span>
+            <span class="track"></span>
+            <span class="step-ball">4</span>
+          </div>
+          <div class="wizard-stage">
+            <span class="icon-shell"><i data-lucide="qr-code"></i></span>
+            <h3>Import Your Config</h3>
+            <p>Scan the QR code in WireGuard on mobile or use the `.conf` download on desktop. Your personal link is also shown for later.</p>
+            <div class="qr-placeholder mono">QR</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-padding" id="pricing">
+      <div class="container">
+        <div class="section-intro">
+          <div class="eyebrow"><span>Pricing</span></div>
+          <h2>Simple, Transparent Pricing</h2>
+          <p>Try the VPN first. If you like it, continue from your personal page without setting everything up again.</p>
+        </div>
+
+        <div class="pricing-grid">
+          <article class="price-card glass">
+            <div class="price-top">
+              <span class="icon-shell"><i data-lucide="zap"></i></span>
+              <div>
+                <h3 style="margin:0">Starter</h3>
+                <div class="price-desc">Best for first-time users who want to test the VPN quickly.</div>
+              </div>
+            </div>
+            <div class="price">$0<small> / free trial</small></div>
+            <ul class="price-list">
+              <li>1-hour free trial per 15-day cycle</li>
+              <li>Dedicated WireGuard profile</li>
+              <li>Personal monitoring portal</li>
+              <li>QR config import and `.conf` download</li>
+              <li>Basic DNS protection</li>
+            </ul>
+            <button class="btn btn-secondary js-open-trial" type="button">Start Free Trial</button>
+          </article>
+
+          <article class="price-card glass popular">
+            <div class="popular-badge">Most Popular</div>
+            <div class="price-top">
+              <span class="icon-shell"><i data-lucide="shield"></i></span>
+              <div>
+                <h3 style="margin:0">Pro</h3>
+                <div class="price-desc">Keep using the same setup after payment with no extra steps.</div>
+              </div>
+            </div>
+            <div class="price">$9.99<small> / month</small></div>
+            <ul class="price-list">
+              <li>Unlimited tunnel time after payment</li>
+              <li>Everything in Starter</li>
+              <li>DNS hardening and ad blocking</li>
+              <li>Threat monitoring and alerts</li>
+              <li>Priority support</li>
+              <li>No profile replacement after upgrade</li>
+            </ul>
+            <button class="btn btn-primary js-open-trial" type="button">Get Pro</button>
+          </article>
+
+          <article class="price-card glass">
+            <div class="price-top">
+              <span class="icon-shell"><i data-lucide="crown"></i></span>
+              <div>
+                <h3 style="margin:0">Enterprise</h3>
+                <div class="price-desc">For teams that need user management, approvals, and more control.</div>
+              </div>
+            </div>
+            <div class="price">$24.99<small> / month</small></div>
+            <ul class="price-list">
+              <li>Everything in Pro</li>
+              <li>TOTP admin dashboard</li>
+              <li>User provisioning workflow</li>
+              <li>Payment approval system</li>
+              <li>Dedicated server endpoints</li>
+              <li>Routing and compliance support</li>
+            </ul>
+            <a class="btn btn-secondary" href="/admin">Open Admin</a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-padding" id="testimonials">
+      <div class="container">
+        <div class="section-intro">
+          <div class="eyebrow"><span>Trusted By</span></div>
+          <h2>What Users Say</h2>
+        </div>
+
+        <div class="testimonial-grid">
+          <article class="testimonial glass">
+            <div class="rating">
+              <span>*</span><span>*</span><span>*</span><span>*</span><span>*</span>
+            </div>
+            <p>"Finally a VPN that doesn't treat me like a number. My own WireGuard profile, my own monitoring page. This is how privacy should work."</p>
+            <h3 style="font-size:16px;margin-bottom:4px">Alex R.</h3>
+            <div style="color:hsl(var(--muted-foreground));font-size:12px">Security Researcher</div>
+          </article>
+          <article class="testimonial glass">
+            <div class="rating">
+              <span>*</span><span>*</span><span>*</span><span>*</span><span>*</span>
+            </div>
+            <p>"The transparent trial metering sold me. No tricks, no surprise expirations. When I upgraded, everything just kept working."</p>
+            <h3 style="font-size:16px;margin-bottom:4px">Priya M.</h3>
+            <div style="color:hsl(var(--muted-foreground));font-size:12px">Remote Developer</div>
+          </article>
+          <article class="testimonial glass">
+            <div class="rating">
+              <span>*</span><span>*</span><span>*</span><span>*</span><span>*</span>
+            </div>
+            <p>"The TOTP admin login and user provisioning workflow is exactly what I needed. Professional-grade controls without the enterprise price."</p>
+            <h3 style="font-size:16px;margin-bottom:4px">Marcus L.</h3>
+            <div style="color:hsl(var(--muted-foreground));font-size:12px">Sysadmin</div>
+          </article>
+        </div>
+
+        <div class="trust-badges">
+          <span class="glass">WireGuard Protocol</span>
+          <span class="glass">Zero-Log Policy</span>
+          <span class="glass">Dedicated Profiles</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-padding" id="faq">
+      <div class="container">
+        <div class="section-intro">
+          <div class="eyebrow"><span>FAQ</span></div>
+          <h2>Got Questions?</h2>
+        </div>
+
+        <div class="faq-shell">
+          <article class="faq-item glass open">
+            <button class="faq-btn" type="button">
+              <span>What makes PHANTOM different from other VPNs?</span>
+              <i data-lucide="chevron-down"></i>
+            </button>
+            <div class="faq-body">You get your own VPN setup, your own status page, and a simple free-trial flow that continues on the same setup after payment.</div>
+          </article>
+          <article class="faq-item glass">
+            <button class="faq-btn" type="button">
+              <span>How does the free trial work?</span>
+              <i data-lucide="chevron-down"></i>
+            </button>
+            <div class="faq-body">You get one free hour in each 15-day cycle. Disconnecting and reconnecting does not reset the timer. If you pay later, you keep using the same setup.</div>
+          </article>
+          <article class="faq-item glass">
+            <button class="faq-btn" type="button">
+              <span>How do I import my config?</span>
+              <i data-lucide="chevron-down"></i>
+            </button>
+            <div class="faq-body">On mobile, scan the QR in WireGuard. On desktop, download the `.conf` file and import it. No manual server entry is needed.</div>
+          </article>
+          <article class="faq-item glass">
+            <button class="faq-btn" type="button">
+              <span>Is there a no-log policy?</span>
+              <i data-lucide="chevron-down"></i>
+            </button>
+            <div class="faq-body">Yes. The architecture is built around zero traffic logs, zero DNS query history, and user-level profile state instead of behavior logging.</div>
+          </article>
+          <article class="faq-item glass">
+            <button class="faq-btn" type="button">
+              <span>How is the admin dashboard secured?</span>
+              <i data-lucide="chevron-down"></i>
+            </button>
+            <div class="faq-body">Admin access is protected by TOTP-based authentication and separate privileged APIs. User onboarding does not share the same credential path.</div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-padding" id="cta">
+      <div class="container">
+        <div class="cta-shell glass-strong">
+          <div class="cta-inner">
+            <h2>Ready to Go <span class="text-gradient-primary">Phantom</span>?</h2>
+            <p>Start your VPN in a few easy steps: sign up, scan the QR, turn it on, and check your personal page.</p>
+            <div class="hero-actions" style="margin-top:30px">
+              <button class="btn btn-primary js-open-trial" type="button">Start Free Trial <i data-lucide="arrow-right"></i></button>
+              <a class="btn btn-secondary" href="/docs"><i data-lucide="book-open"></i>Read Docs</a>
+            </div>
+            <div class="cta-features">
+              <span>No credit card required</span>
+              <span>1-hour free trial</span>
+              <span>Zero reconfiguration after payment</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-row">
+      <a class="brand" href="#top" style="text-decoration:none">
+        <img src="/brand/landing-logo.png" alt="PHANTOM VPN logo">
+        <span>PHANTOM <span>VPN</span></span>
+      </a>
+
+      <div class="footer-links">
+        <a href="#how-it-works">How It Works</a>
+        <a href="#security">Security</a>
+        <a href="#compare">Compare</a>
+        <a href="#faq">FAQ</a>
+        <a href="/docs">Docs</a>
+        <a href="/routing">Routing</a>
+      </div>
+
+      <div style="font-size:12px;color:hsl(var(--muted-foreground))">© 2026 PHANTOM VPN. All rights reserved.</div>
+    </div>
+  </footer>
+
+  <div class="modal-backdrop" id="trialModal">
+    <div class="modal glass-strong">
+      <button class="icon-btn modal-close" id="trialModalClose" type="button" aria-label="Close trial modal">
+        <i data-lucide="x"></i>
+      </button>
+
+      <div class="modal-pad" id="trialFormView">
+        <div class="modal-icon"><i data-lucide="shield"></i></div>
+        <div class="modal-copy">
+          <h3>Start Free Trial</h3>
+          <p>Enter your details and we will create your VPN access right away. Then just scan the QR and turn it on.</p>
+        </div>
+
+        <form class="modal-form" id="trialForm">
+          <div class="field">
+            <label for="trialName">Full name</label>
+            <div class="input-shell">
+              <i data-lucide="user"></i>
+              <input id="trialName" type="text" placeholder="Alex Rivers" required>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="trialEmail">Email address</label>
+            <div class="input-shell">
+              <i data-lucide="mail"></i>
+              <input id="trialEmail" type="email" placeholder="alex@example.com" required>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="trialNote">Device name</label>
+            <div class="input-shell">
+              <i data-lucide="smartphone"></i>
+              <textarea id="trialNote" placeholder="Optional: iPhone, laptop, office device"></textarea>
+            </div>
+          </div>
+
+          <button class="btn btn-primary" id="trialSubmitBtn" type="submit" style="width:100%;margin-top:18px">Create Account <i data-lucide="arrow-right"></i></button>
+          <div class="form-status" id="trialFormStatus"></div>
+          <div class="modal-footnote">1-hour free trial • No credit card required</div>
+        </form>
+      </div>
+
+      <div class="modal-pad hidden" id="trialWizardView">
+        <div class="wizard-head">
+          <div class="modal-icon" style="margin:0"><i data-lucide="sparkles"></i></div>
+          <div>
+            <small class="mono" id="wizardCounter">Step 1 of 4</small>
+            <div style="font-weight:800;font-size:24px">Your PHANTOM setup is ready</div>
+          </div>
+        </div>
+
+        <div class="wizard-progress">
+          <span class="wizard-step-ball active" data-progress-step="0">1</span>
+          <span class="bar active" data-progress-bar="0"></span>
+          <span class="wizard-step-ball" data-progress-step="1">2</span>
+          <span class="bar" data-progress-bar="1"></span>
+          <span class="wizard-step-ball" data-progress-step="2">3</span>
+          <span class="bar" data-progress-bar="2"></span>
+          <span class="wizard-step-ball" data-progress-step="3">4</span>
+        </div>
+
+        <section class="wizard-pane show" data-pane="0">
+          <h4>Import Your Config</h4>
+          <p>Open WireGuard and scan this QR on your phone, or download the file if you are on desktop.</p>
+          <div class="qr-box" id="qrBox"><span style="color:#111">QR loading...</span></div>
+          <div class="hero-actions" style="justify-content:center;margin-top:18px">
+            <button class="btn btn-secondary js-download-config" type="button"><i data-lucide="download"></i>Download .conf</button>
+          </div>
+          <details class="config-preview">
+            <summary>Preview generated config</summary>
+            <pre id="configOut"></pre>
+          </details>
+        </section>
+
+        <section class="wizard-pane" data-pane="1">
+          <h4>Activate Tunnel</h4>
+          <p>Open WireGuard, import your VPN, and turn it on before moving to the next step.</p>
+          <div class="switch-mock"></div>
+          <div class="helper-card">
+            <p>Your free time continues from where you left off. Reconnecting does not reset the timer.</p>
+          </div>
+        </section>
+
+        <section class="wizard-pane" data-pane="2">
+          <h4>Open Monitoring Portal</h4>
+          <p>Your personal page shows your connection status, free time left, and payment options. Save this link.</p>
+          <div class="helper-card">
+            <a class="portal-link" id="portalLink" href="#" target="_blank" rel="noreferrer">-</a>
+            <div class="hero-actions" style="justify-content:center;margin-top:16px">
+              <a class="btn btn-primary" id="portalBtn" href="#" target="_blank" rel="noreferrer">Open My Monitor <i data-lucide="external-link"></i></a>
+            </div>
+          </div>
+        </section>
+
+        <section class="wizard-pane" data-pane="3">
+          <h4>Verify Connection</h4>
+          <p>Use this check to make sure your VPN is connected before you finish setup.</p>
+          <div class="hero-actions" style="justify-content:center;margin-top:18px">
+            <button class="btn btn-primary" id="verifyConnectionBtn" type="button">Check Connection Status</button>
+          </div>
+          <div class="verify-status" id="verifyStatus"></div>
+        </section>
+
+        <div class="wizard-actions">
+          <div class="hint" id="wizardHint">Use Next to continue.</div>
+          <div class="wizard-nav">
+            <button class="btn btn-secondary" id="wizardPrevBtn" type="button">Previous</button>
+            <button class="btn btn-primary" id="wizardNextBtn" type="button">Next</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="/ui/vendor/qrcode.min.js"></script>
+  <script type="module" src="/ui/landing/scripts/app.js"></script>
+</body>
+</html>

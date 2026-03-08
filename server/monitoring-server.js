@@ -43,6 +43,7 @@ const PORTAL_FILE = '/opt/phantom-vpn/portal.html';
 const ROUTING_FILE = '/opt/phantom-vpn/routing.html';
 const DOCS_FILE = '/opt/phantom-vpn/docs.html';
 const BRAND_DIR = '/opt/phantom-vpn/brand';
+const UI_DIR = '/opt/phantom-vpn/ui';
 const USERS_DB_FILE = '/opt/phantom-vpn/users.json';
 const WG_CONF_FILE = '/etc/wireguard/wg0.conf';
 const WG_SERVER_PUBLIC_KEY_FILE = '/etc/wireguard/server_public.key';
@@ -127,10 +128,23 @@ function serveHtml(res, path, notFoundMsg) {
 
 function mimeTypeFromPath(filePath) {
   const ext = pathMod.extname(filePath).toLowerCase();
+  if (ext === '.css') return 'text/css; charset=utf-8';
+  if (ext === '.js' || ext === '.mjs') return 'application/javascript; charset=utf-8';
+  if (ext === '.html') return 'text/html; charset=utf-8';
+  if (ext === '.jpg' || ext === '.jpeg') return 'image/jpeg';
   if (ext === '.svg') return 'image/svg+xml';
   if (ext === '.png') return 'image/png';
   if (ext === '.ico') return 'image/x-icon';
   return 'application/octet-stream';
+}
+
+function safeStaticPath(rootDir, requestPath) {
+  const normalized = pathMod.posix.normalize(`/${String(requestPath || '')}`).replace(/^\/+/, '');
+  if (!normalized || normalized.startsWith('..')) return null;
+  const filePath = pathMod.join(rootDir, normalized);
+  const relative = pathMod.relative(rootDir, filePath);
+  if (relative.startsWith('..') || pathMod.isAbsolute(relative)) return null;
+  return filePath;
 }
 
 function serveStaticFile(res, filePath) {
@@ -454,7 +468,7 @@ function assertProvisioningReady(req) {
 
 function buildClientConfig(name, privateKey, address, serverPub, endpoint) {
   return [
-    '# PHANTOM VPN — User Config',
+    '# PHANTOM VPN - User Config',
     `# User: ${name}`,
     '',
     '[Interface]',
@@ -1127,13 +1141,24 @@ function handleRequest(req, res) {
   }
 
   if (path.startsWith('/brand/')) {
-    const name = path.slice('/brand/'.length);
-    if (!/^[a-zA-Z0-9._-]+$/.test(name)) {
+    const filePath = safeStaticPath(BRAND_DIR, path.slice('/brand/'.length));
+    if (!filePath) {
       res.writeHead(400, { 'Content-Type': 'text/plain; charset=utf-8' });
       res.end('Invalid asset path');
       return;
     }
-    serveStaticFile(res, `${BRAND_DIR}/${name}`);
+    serveStaticFile(res, filePath);
+    return;
+  }
+
+  if (path.startsWith('/ui/')) {
+    const filePath = safeStaticPath(UI_DIR, path.slice('/ui/'.length));
+    if (!filePath) {
+      res.writeHead(400, { 'Content-Type': 'text/plain; charset=utf-8' });
+      res.end('Invalid asset path');
+      return;
+    }
+    serveStaticFile(res, filePath);
     return;
   }
 

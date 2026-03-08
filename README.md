@@ -4,15 +4,17 @@
 
 | File | Purpose |
 |------|---------|
-| `1-deploy.sh` | DigitalOcean one-click deployment script |
-| `2-monitoring-server.js` | Node.js real-time monitoring API |
-| `3-dashboard.html` | Live web dashboard (open in browser) |
-| `5-landing.html` | Public onboarding page with 1-hour free trial + payment submission |
-| `6-admin.html` | Admin login, QR/TOTP setup, user provisioning, payment approval |
-| `7-user-dashboard.html` | End-user profile page with live access state, QR import, and payment actions |
-| `8-routing.html` | Public routing explanation page |
-| `9-docs.html` | First-time onboarding docs with dummy user walkthrough |
+| `scripts/deploy.sh` | DigitalOcean one-click deployment script |
+| `scripts/check-deployment.sh` | End-to-end VPS verification helper |
+| `server/monitoring-server.js` | Node.js real-time monitoring API |
+| `pages/dashboard.html` | Live web dashboard (open in browser) |
+| `pages/landing.html` | Public onboarding page with 1-hour free trial + payment submission |
+| `pages/admin.html` | Admin login, QR/TOTP setup, user provisioning, payment approval |
+| `pages/profile.html` | End-user profile page with live access state, QR import, and payment actions |
+| `pages/routing.html` | Public routing explanation page |
+| `pages/docs.html` | First-time onboarding docs with dummy user walkthrough |
 | `brand/` | PHANTOMVPN logo and favicon assets |
+| `ui/landing/` | Modular Phantom Vault-style landing-page CSS and browser modules |
 | `chrome-extension/` | Chrome browser extension folder |
 
 ## Quick Start
@@ -20,8 +22,8 @@
 ### 1. Deploy to DigitalOcean
 ```bash
 # Create a Ubuntu 22.04 droplet, SSH in as root, then:
-scp -r 1-deploy.sh 2-monitoring-server.js 3-dashboard.html 5-landing.html 6-admin.html 7-user-dashboard.html 8-routing.html 9-docs.html brand root@YOUR_DROPLET_IP:/root/
-ssh root@YOUR_DROPLET_IP "bash /root/1-deploy.sh"
+scp -r scripts server pages brand ui root@YOUR_DROPLET_IP:/root/
+ssh root@YOUR_DROPLET_IP "bash /root/scripts/deploy.sh"
 ```
 
 ### 2. Admin Login
